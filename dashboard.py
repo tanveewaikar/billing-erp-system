@@ -3,6 +3,10 @@
 import customtkinter as ctk
 from tkinter import ttk
 from datetime import datetime
+from customers import CustomersPage
+from products import ProductsPage
+from billing import BillingPage
+from reports import ReportsPage
 
 
 class Dashboard:
@@ -41,14 +45,30 @@ class Dashboard:
         )
         self.logo.pack(pady=30)
 
-        self.create_sidebar_button("🏠 Dashboard")
-        self.create_sidebar_button("👤 Customers")
-        self.create_sidebar_button("📦 Products")
-        self.create_sidebar_button("🧾 Billing")
-        self.create_sidebar_button("📄 Invoices")
-        self.create_sidebar_button("📊 Reports")
-        self.create_sidebar_button("⚙ Settings")
-        self.create_sidebar_button("🚪 Logout")
+        self.create_sidebar_button(
+        "🏠 Dashboard",
+        self.show_dashboard
+        )
+
+        self.create_sidebar_button(
+        "👤 Customers",
+        self.show_customers
+        )
+
+        self.create_sidebar_button(
+        "📦 Products",
+        self.show_products
+        )
+
+        self.create_sidebar_button(
+        "🧾 Billing",
+        self.show_billing
+        )
+
+        self.create_sidebar_button(
+        "📊 Reports",
+        self.show_reports
+        )
 
         # ==============================
         # HEADER
@@ -78,8 +98,45 @@ class Dashboard:
             text_color="#6B7280"
         )
         self.clock.pack(side="right", padx=20)
+        
+        def clear_content(self):
 
-        self.update_clock()
+           for widget in self.content_frame.winfo_children():
+            widget.destroy()
+            
+        def show_dashboard(self):
+
+           self.clear_content()
+           
+        def show_customers(self):
+
+           self.clear_content()
+           page = ctk.CTkFrame(self.content_frame)
+           page.pack(fill="both", expand=True)
+           CustomersPage(page)
+           
+        def show_products(self):
+
+          self.clear_content()
+          page = ctk.CTkFrame(self.content_frame)
+          page.pack(fill="both", expand=True)
+          ProductsPage(page)
+
+        def show_billing(self):
+
+          self.clear_content()
+          page = ctk.CTkFrame(self.content_frame)
+          page.pack(fill="both", expand=True)
+          BillingPage(page)
+          
+        def show_reports(self):
+
+          self.clear_content()
+          page = ctk.CTkFrame(self.content_frame)
+          page.pack(fill="both", expand=True)
+          ReportsPage(page)
+          
+          self.update_clock()
         
         # ==============================
         # CONTENT FRAME
@@ -230,11 +287,12 @@ class Dashboard:
     # SIDEBAR BUTTON
     # ======================================
 
-    def create_sidebar_button(self, text):
+    def create_sidebar_button(self, text, command):
 
         btn = ctk.CTkButton(
             self.sidebar,
             text=text,
+            command=command,
             width=220,
             height=45,
             fg_color="transparent",
