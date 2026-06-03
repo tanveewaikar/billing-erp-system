@@ -32,7 +32,7 @@ class Dashboard:
             fg_color="#F4F6F9"
         )
         self.main_frame.pack(side="right", fill="both", expand=True)
-
+        
         # ==============================
         # SIDEBAR
         # ==============================
@@ -46,28 +46,28 @@ class Dashboard:
         self.logo.pack(pady=30)
 
         self.create_sidebar_button(
-        "🏠 Dashboard",
-        self.show_dashboard
+            "🏠 Dashboard",
+            self.show_dashboard
         )
 
         self.create_sidebar_button(
-        "👤 Customers",
-        self.show_customers
+            "👤 Customers",
+            self.show_customers
         )
 
         self.create_sidebar_button(
-        "📦 Products",
-        self.show_products
+            "📦 Products",
+            self.show_products
         )
 
         self.create_sidebar_button(
-        "🧾 Billing",
-        self.show_billing
+            "🧾 Billing",
+            self.show_billing
         )
 
         self.create_sidebar_button(
-        "📊 Reports",
-        self.show_reports
+            "📊 Reports",
+            self.show_reports
         )
 
         # ==============================
@@ -98,10 +98,9 @@ class Dashboard:
             text_color="#6B7280"
         )
         self.clock.pack(side="right", padx=20)
-        
+
         self.update_clock()
-        
-        
+
         # ==============================
         # CONTENT FRAME
         # ==============================
@@ -117,157 +116,29 @@ class Dashboard:
         padx=20,
         pady=(0, 20)
         )
-
-        # ==============================
-        # CARDS SECTION
-        # ==============================
-
-        self.cards_frame = ctk.CTkFrame(
-            self.content_frame,
-            fg_color="transparent"
-        )
-        self.cards_frame.pack(fill="x", padx=20)
-
-        self.create_card(
-            self.cards_frame,
-            "Today's Sales",
-            "₹25,000"
-        )
-
-        self.create_card(
-            self.cards_frame,
-            "Customers",
-            "150"
-        )
-
-        self.create_card(
-            self.cards_frame,
-            "Products",
-            "320"
-        )
-
-        self.create_card(
-            self.cards_frame,
-            "Invoices",
-            "52"
-        )
-
-        # ==============================
-        # SALES GRAPH AREA
-        # ==============================
-
-        self.graph_frame = ctk.CTkFrame(
-            self.content_frame,
-            height=300,
-            fg_color="white",
-            corner_radius=15
-        )
-        self.graph_frame.pack(
-            fill="x",
-            padx=20,
-            pady=20
-        )
-
-        self.graph_frame.pack_propagate(False)
-
-        graph_title = ctk.CTkLabel(
-            self.graph_frame,
-            text="Sales Analytics",
-            font=("Segoe UI", 20, "bold")
-        )
-        graph_title.pack(pady=20)
-
-        graph_placeholder = ctk.CTkLabel(
-            self.graph_frame,
-            text="Sales Graph Here",
-            font=("Segoe UI", 18),
-            text_color="gray"
-        )
-        graph_placeholder.pack(pady=80)
-
-        # ==============================
-        # RECENT INVOICES TABLE
-        # ==============================
-
-        self.table_frame = ctk.CTkFrame(
-            self.content_frame,
-            fg_color="white",
-            corner_radius=15
-        )
-        self.table_frame.pack(
-            fill="both",
-            expand=True,
-            padx=20,
-            pady=20
-        )
-
-        table_title = ctk.CTkLabel(
-            self.table_frame,
-            text="Recent Invoices",
-            font=("Segoe UI", 20, "bold")
-        )
-        table_title.pack(pady=20)
-
-        columns = (
-            "Invoice No",
-            "Customer",
-            "Amount",
-            "Status",
-            "Date"
-        )
-
-        self.tree = ttk.Treeview(
-            self.table_frame,
-            columns=columns,
-            show="headings",
-            height=10
-        )
-
-        for col in columns:
-
-            self.tree.heading(col, text=col)
-            self.tree.column(col, width=180)
-
-        self.tree.pack(
-            fill="both",
-            expand=True,
-            padx=20,
-            pady=20
-        )
-
-        # SAMPLE DATA
-
-        sample_data = [
-            ("INV001", "Rahul", "₹5000", "Paid", "17-05-2026"),
-            ("INV002", "Aman", "₹3200", "Pending", "17-05-2026"),
-            ("INV003", "Priya", "₹9200", "Paid", "17-05-2026"),
-            ("INV004", "Rohit", "₹1500", "Paid", "17-05-2026"),
-        ]
-
-        for row in sample_data:
-            self.tree.insert("", "end", values=row)
-            
+       
         self.show_dashboard()
-
+        
     # ======================================
     # SIDEBAR BUTTON
     # ======================================
 
     def create_sidebar_button(self, text, command):
 
-        btn = ctk.CTkButton(
-            self.sidebar,
-            text=text,
-            command=command,
-            width=220,
-            height=45,
-            fg_color="transparent",
-            hover_color="#1E293B",
-            anchor="w",
-            font=("Segoe UI", 16)
-        )
+      btn = ctk.CTkButton(
+        self.sidebar,
+        text=text,
+        command=command,
+        width=220,
+        height=45,
+        fg_color="transparent",
+        hover_color="#1E293B",
+        anchor="w",
+        font=("Segoe UI", 16)
+      )
 
-        btn.pack(pady=5)
+      btn.pack(pady=5)
+
 
     # ======================================
     # PAGE NAVIGATION
