@@ -7,7 +7,7 @@ from customers import CustomersPage
 from products import ProductsPage
 from billing import BillingPage
 from reports import ReportsPage
-
+from dashboard_page import DashboardPage
 
 class Dashboard:
 
@@ -99,44 +99,8 @@ class Dashboard:
         )
         self.clock.pack(side="right", padx=20)
         
-        def clear_content(self):
-
-           for widget in self.content_frame.winfo_children():
-            widget.destroy()
-            
-        def show_dashboard(self):
-
-           self.clear_content()
-           
-        def show_customers(self):
-
-           self.clear_content()
-           page = ctk.CTkFrame(self.content_frame)
-           page.pack(fill="both", expand=True)
-           CustomersPage(page)
-           
-        def show_products(self):
-
-          self.clear_content()
-          page = ctk.CTkFrame(self.content_frame)
-          page.pack(fill="both", expand=True)
-          ProductsPage(page)
-
-        def show_billing(self):
-
-          self.clear_content()
-          page = ctk.CTkFrame(self.content_frame)
-          page.pack(fill="both", expand=True)
-          BillingPage(page)
-          
-        def show_reports(self):
-
-          self.clear_content()
-          page = ctk.CTkFrame(self.content_frame)
-          page.pack(fill="both", expand=True)
-          ReportsPage(page)
-          
-          self.update_clock()
+        self.update_clock()
+        
         
         # ==============================
         # CONTENT FRAME
@@ -282,6 +246,8 @@ class Dashboard:
 
         for row in sample_data:
             self.tree.insert("", "end", values=row)
+            
+        self.show_dashboard()
 
     # ======================================
     # SIDEBAR BUTTON
@@ -303,6 +269,61 @@ class Dashboard:
 
         btn.pack(pady=5)
 
+    # ======================================
+    # PAGE NAVIGATION
+    # ======================================
+
+    def clear_content(self):
+
+        for widget in self.content_frame.winfo_children():
+            widget.destroy()
+
+    def show_dashboard(self):
+
+        self.clear_content()
+
+        page = ctk.CTkFrame(self.content_frame)
+        page.pack(fill="both", expand=True)
+
+        DashboardPage(page)
+
+    def show_customers(self):
+
+        self.clear_content()
+
+        page = ctk.CTkFrame(self.content_frame)
+        page.pack(fill="both", expand=True)
+
+        CustomersPage(page)
+
+    def show_products(self):
+
+        self.clear_content()
+
+        page = ctk.CTkFrame(self.content_frame)
+        page.pack(fill="both", expand=True)
+
+        ProductsPage(page)
+
+    def show_billing(self):
+
+        self.clear_content()
+
+        page = ctk.CTkFrame(self.content_frame)
+        page.pack(fill="both", expand=True)
+
+        BillingPage(page)
+
+    def show_reports(self):
+
+        self.clear_content()
+
+        page = ctk.CTkFrame(self.content_frame)
+        page.pack(fill="both", expand=True)
+
+        ReportsPage(page)
+        
+        
     # ======================================
     # CARD CREATOR
     # ======================================
