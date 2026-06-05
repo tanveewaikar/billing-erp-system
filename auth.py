@@ -1,6 +1,7 @@
 # auth.py
 
 import mysql.connector
+from database.db_connection import get_connection
 from tkinter import messagebox
 
 
@@ -8,13 +9,7 @@ class AuthSystem:
 
     def __init__(self):
 
-        self.connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="Tanvee@1311",
-            port = 3306,
-            database="billing_system"
-        )
+        self.connection = get_connection()
 
         self.cursor = self.connection.cursor()
         print("Connected to MySQL Successfully")
