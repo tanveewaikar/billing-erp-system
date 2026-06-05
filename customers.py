@@ -47,6 +47,9 @@ class CustomersPage:
         
         update_btn = ctk.CTkButton(form,text="Update Customer",command=self.update_customer)
         update_btn.grid(row=2, column=1, pady=20)
+        
+        delete_btn = ctk.CTkButton(form,text="Delete Customer", fg_color="red",hover_color="darkred",command=self.delete_customer)
+        delete_btn.grid(row=2, column=2, pady=20)
 
         table_frame = ctk.CTkFrame(parent)
         table_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -224,4 +227,47 @@ class CustomersPage:
             messagebox.showerror(
             "Error",
             str(e)
+            )
+            
+    # ==========================================
+    # DELETE CUSTOMER
+    # ==========================================
+
+    def delete_customer(self):
+
+        try:
+
+            if not self.selected_customer_id:
+
+                messagebox.showwarning(
+                   "Warning",
+                   "Please select a customer first."
+                )
+                return
+
+            confirm = messagebox.askyesno(
+                "Confirm Delete",
+                "Are you sure you want to delete this customer?"
+            )
+
+            if not confirm:
+               return
+
+            self.customer_db.delete_customer(
+               self.selected_customer_id
+            )
+
+            messagebox.showinfo(
+               "Success",
+               "Customer deleted successfully!"
+            )
+
+            self.load_customers()
+            self.selected_customer_id = None
+
+        except Exception as e:
+
+            messagebox.showerror(
+               "Error",
+               str(e)
             )

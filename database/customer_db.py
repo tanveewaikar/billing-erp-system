@@ -123,6 +123,20 @@ class CustomerDB:
         self.cursor.execute(query, values)
         self.connection.commit()
     
+    # ==========================================
+    # DELETE CUSTOMER
+    # ==========================================
+
+    def delete_customer(self, customer_id):
+
+        query = """
+        DELETE FROM customers
+        WHERE customer_id = %s
+        """
+
+        self.cursor.execute(query, (customer_id,))
+        self.connection.commit()
+    
     def close_connection(self):
 
         self.cursor.close()
