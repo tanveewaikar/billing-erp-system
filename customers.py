@@ -66,6 +66,7 @@ class CustomersPage:
             self.tree.column(col, width=150)
 
         self.tree.pack(fill="both", expand=True)
+        self.load_customers()
     
     # ==========================================
     # ADD CUSTOMER
@@ -91,6 +92,8 @@ class CustomersPage:
                 "Success",
                 "Customer added successfully!"
             )
+            
+            self.load_customers()
 
             self.name.delete(0, "end")
             self.phone.delete(0, "end")
@@ -107,3 +110,29 @@ class CustomersPage:
                 "Error",
                 str(e)
             )
+            
+
+    # ==========================================
+    # LOAD CUSTOMERS
+    # ==========================================
+
+    def load_customers(self):
+
+        # Clear existing rows
+
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        # Fetch customers from database
+
+        customers = self.customer_db.get_all_customers()
+
+        # Insert into treeview
+
+        for customer in customers:
+
+            self.tree.insert(
+            "",
+            "end",
+            values=customer
+        )

@@ -51,6 +51,31 @@ class CustomerDB:
 
         self.cursor.execute(query, values)
         self.connection.commit()
+        
+    # ==========================================
+    # GET ALL CUSTOMERS
+    # ==========================================
+
+    def get_all_customers(self):
+
+        query = """
+        SELECT
+            customer_id,
+            customer_name,
+            phone,
+            email,
+            gst_number,
+            address,
+            city,
+            state,
+            pincode
+        FROM customers
+        ORDER BY customer_id DESC
+        """
+
+        self.cursor.execute(query)
+
+        return self.cursor.fetchall()
 
     def close_connection(self):
 
