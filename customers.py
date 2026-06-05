@@ -7,6 +7,7 @@ class CustomersPage:
     def __init__(self, parent):
         
         self.customer_db = CustomerDB()
+        self.selected_customer_id = None
         title = ctk.CTkLabel(
             parent,
             text="Customer Management",
@@ -43,6 +44,9 @@ class CustomersPage:
 
         add_btn = ctk.CTkButton(form, text="Add Customer", command =self.add_customer)
         add_btn.grid(row=2, column=0, pady=20)
+        
+        update_btn = ctk.CTkButton(form,text="Update Customer",command=self.update_customer)
+        update_btn.grid(row=2, column=1, pady=20)
 
         table_frame = ctk.CTkFrame(parent)
         table_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -66,6 +70,10 @@ class CustomersPage:
             self.tree.column(col, width=150)
 
         self.tree.pack(fill="both", expand=True)
+        self.tree.bind(
+            "<<TreeviewSelect>>",
+            self.select_customer
+        )
         self.load_customers()
     
     # ==========================================
@@ -136,3 +144,84 @@ class CustomersPage:
             "end",
             values=customer
         )
+            
+    # ==========================================
+    # SELECT CUSTOMER
+    # ==========================================
+
+    def select_customer(self, event):
+
+       selected = self.tree.focus()
+
+       if not selected:
+         return
+
+       values = self.tree.item(selected, "values")
+
+       self.selected_customer_id = values[0]
+
+       self.name.delete(0, "end")
+       self.name.insert(0, values[1])
+
+       self.phone.delete(0, "end")
+       self.phone.insert(0, values[2])
+
+       self.email.delete(0, "end")
+       self.email.insert(0, values[3])
+
+       self.gst.delete(0, "end")
+       self.gst.insert(0, values[4])
+
+       self.address.delete(0, "end")
+       self.address.insert(0, values[5])
+
+       self.city.delete(0, "end")
+       self.city.insert(0, values[6])
+
+       self.state.delete(0, "end")
+       self.state.insert(0, values[7])
+
+       self.pincode.delete(0, "end")
+       self.pincode.insert(0, values[8])
+       
+    # ==========================================
+    # UPDATE CUSTOMER
+    # ==========================================
+
+    def update_customer(self):
+
+        try:
+
+            if not self.selected_customer_id:
+
+                messagebox.showwarning(
+                "Warning",
+                "Please select a customer first."
+                )
+                return
+
+            self.customer_db.update_customer(
+                customer_id=self.selected_customer_id,
+                customer_name=self.name.get(),
+                phone=self.phone.get(),
+                email=self.email.get(),
+                gst_number=self.gst.get(),
+                address=self.address.get(),
+                city=self.city.get(),
+                state=self.state.get(),
+                pincode=self.pincode.get()
+            )
+
+            messagebox.showinfo(
+            "Success",
+            "Customer updated successfully!"
+            )
+
+            self.load_customers()
+
+        except Exception as e:
+
+            messagebox.showerror(
+            "Error",
+            str(e)
+            )

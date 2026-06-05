@@ -76,7 +76,53 @@ class CustomerDB:
         self.cursor.execute(query)
 
         return self.cursor.fetchall()
+    
+    # ==========================================
+    # UPDATE CUSTOMER
+    # ==========================================
 
+    def update_customer(
+        self,
+        customer_id,
+        customer_name,
+        phone,
+        email,
+        gst_number,
+        address,
+        city,
+        state,
+        pincode
+    ):
+
+        query = """
+        UPDATE customers
+        SET
+           customer_name=%s,
+           phone=%s,
+           email=%s,
+           gst_number=%s,
+           address=%s,
+           city=%s,
+           state=%s,
+           pincode=%s
+        WHERE customer_id=%s
+        """
+
+        values = (
+           customer_name,
+           phone,
+           email,
+           gst_number,
+           address,
+           city,
+           state,
+           pincode,
+           customer_id
+        )
+
+        self.cursor.execute(query, values)
+        self.connection.commit()
+    
     def close_connection(self):
 
         self.cursor.close()
