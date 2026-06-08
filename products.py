@@ -1,5 +1,7 @@
 import customtkinter as ctk
 from tkinter import ttk
+from tkinter import ttk, messagebox
+from database.product_db import ProductDB
 
 class ProductsPage:
 
@@ -29,15 +31,18 @@ class ProductsPage:
         self.gst.grid(row=1, column=1, padx=10, pady=10)
         
         self.purchase_price = ctk.CTkEntry(form, placeholder_text="Purchase Price")
+        self.purchase_price.grid(row=2, column=0, padx=10, pady=10)
 
         self.barcode = ctk.CTkEntry(form, placeholder_text="Barcode")
+        self.barcode.grid(row=2, column=1, padx=10, pady=10)
 
         self.unit = ctk.CTkEntry(form, placeholder_text="Unit (pcs/kg/ltr)")
+        self.unit.grid(row=3, column=0, padx=10, pady=10)
 
         btn_frame = ctk.CTkFrame(parent)
         btn_frame.pack(fill="x", padx=20, pady=10)
-
-        self.save_btn = ctk.CTkButton( btn_frame, text="Add Product")
+        
+        self.save_btn = ctk.CTkButton( btn_frame, text="Add Product",command=self.add_product)
         self.save_btn.pack(side="left", padx=10)
 
         self.update_btn = ctk.CTkButton( btn_frame, text="Update Product")
@@ -45,7 +50,6 @@ class ProductsPage:
 
         self.delete_btn = ctk.CTkButton( btn_frame, text="Delete Product")
         self.delete_btn.pack(side="left", padx=10)
-        
 
         table_frame = ctk.CTkFrame(parent)
         table_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -64,3 +68,76 @@ class ProductsPage:
             self.tree.column(col, width=150)
 
         self.tree.pack(fill="both", expand=True)
+        self.load_products()
+        
+    def add_product(self):
+
+        product_name = self.product_name.get().strip()
+        selling_price = self.price.get().strip()
+        stock_quantity = self.stock.get().strip()
+        gst_percent = self.gst.get().strip()
+
+        if not product_name:
+           messagebox.showerror(
+             "Error",
+             "Product name is required"
+           )
+           return
+        
+        if not self.barcode.get().strip():
+            messagebox.showerror(
+             "Error",
+             "Barcode is required"
+            )
+            return
+
+        try:
+
+            ProductDB.add_product(
+              product_name,
+              self.barcode.get().strip(),
+              float(self.purchase_price.get() or 0),
+              float(selling_price),
+              float(gst_percent),
+              int(stock_quantity),
+              self.unit.get().strip() or "pcs"
+            )
+
+            messagebox.showinfo(
+                "Success",
+                "Product added successfully"
+            )
+
+            self.clear_fields()
+
+        except Exception as e:
+            messagebox.showerror(
+              "Error",
+              str(e)
+            )
+        
+    def clear_fields(self):
+
+        self.product_name.delete(0, "end")
+        self.price.delete(0, "end")
+        self.stock.delete(0, "end")
+        self.gst.delete(0, "end")
+        self.purchase_price.delete(0, "end")
+        self.barcode.delete(0, "end")
+        self.unit.delete(0, "end")
+        
+    def load_products(self):
+
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        products = ProductDB.get_all_products()
+
+        for product in products:
+
+            self.tree.insert(
+              "",
+              "end",
+              values=product
+            )
+    

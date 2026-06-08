@@ -47,3 +47,25 @@ class ProductDB:
 
         cursor.close()
         conn.close()
+        
+    @staticmethod
+    def get_all_products():
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+               product_id,
+               product_name,
+               selling_price,
+               stock_quantity,
+               gst_percent
+            FROM products
+        """)
+
+        products = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+        return products
