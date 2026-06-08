@@ -4,7 +4,8 @@ from tkinter import ttk
 class ProductsPage:
 
     def __init__(self, parent):
-
+        
+        self.selected_product_id = None
         title = ctk.CTkLabel(
             parent,
             text="Product Management",
@@ -27,8 +28,18 @@ class ProductsPage:
         self.gst = ctk.CTkEntry(form, placeholder_text="GST %")
         self.gst.grid(row=1, column=1, padx=10, pady=10)
 
-        save_btn = ctk.CTkButton(form, text="Save Product")
-        save_btn.grid(row=2, column=0, pady=20)
+        btn_frame = ctk.CTkFrame(parent)
+        btn_frame.pack(fill="x", padx=20, pady=10)
+
+        self.save_btn = ctk.CTkButton( btn_frame, text="Add Product")
+        self.save_btn.pack(side="left", padx=10)
+
+        self.update_btn = ctk.CTkButton( btn_frame, text="Update Product")
+        self.update_btn.pack(side="left", padx=10)
+
+        self.delete_btn = ctk.CTkButton( btn_frame, text="Delete Product")
+        self.delete_btn.pack(side="left", padx=10)
+        
 
         table_frame = ctk.CTkFrame(parent)
         table_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -40,10 +51,10 @@ class ProductsPage:
             "GST"
         )
 
-        tree = ttk.Treeview(table_frame, columns=columns, show="headings")
+        self.tree = ttk.Treeview(table_frame, columns=columns, show="headings")
 
         for col in columns:
-            tree.heading(col, text=col)
-            tree.column(col, width=150)
+            self.tree.heading(col, text=col)
+            self.tree.column(col, width=150)
 
-        tree.pack(fill="both", expand=True)
+        self.tree.pack(fill="both", expand=True)
