@@ -27,6 +27,12 @@ class ProductsPage:
 
         self.gst = ctk.CTkEntry(form, placeholder_text="GST %")
         self.gst.grid(row=1, column=1, padx=10, pady=10)
+        
+        self.purchase_price = ctk.CTkEntry(form, placeholder_text="Purchase Price")
+
+        self.barcode = ctk.CTkEntry(form, placeholder_text="Barcode")
+
+        self.unit = ctk.CTkEntry(form, placeholder_text="Unit (pcs/kg/ltr)")
 
         btn_frame = ctk.CTkFrame(parent)
         btn_frame.pack(fill="x", padx=20, pady=10)
