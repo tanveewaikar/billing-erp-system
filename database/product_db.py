@@ -58,9 +58,12 @@ class ProductDB:
             SELECT
                product_id,
                product_name,
+               purchase_price,
                selling_price,
                stock_quantity,
-               gst_percent
+               gst_percent,
+               barcode,
+               unit
             FROM products
         """)
 
@@ -69,3 +72,38 @@ class ProductDB:
         cursor.close()
         conn.close()
         return products
+    
+    @staticmethod
+    def update_product(
+        product_id,
+        product_name,
+        selling_price,
+        stock_quantity,
+        gst_percent
+    ):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            UPDATE products
+            SET product_name=%s,
+                selling_price=%s,
+                stock_quantity=%s,
+                gst_percent=%s
+                
+            WHERE product_id=%s
+            """,
+            (
+                product_name,
+                selling_price,
+                stock_quantity,
+                gst_percent,
+                product_id
+            )
+        )
+
+        conn.commit()
+        cursor.close()
+        conn.close()
