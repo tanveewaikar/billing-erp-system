@@ -136,8 +136,29 @@ class CustomerDB:
 
         self.cursor.execute(query, (customer_id,))
         self.connection.commit()
+        
+    @staticmethod
+    def get_customer_names():
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+           SELECT customer_name
+           FROM customers
+           ORDER BY customer_name
+        """)
+
+        customers = [row[0] for row in cursor.fetchall()]
+
+        cursor.close()
+        conn.close()
+
+        return customers
     
     def close_connection(self):
 
         self.cursor.close()
         self.connection.close()
+        
+    

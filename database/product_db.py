@@ -74,6 +74,33 @@ class ProductDB:
         return products
     
     @staticmethod
+    def get_product_by_name(product_name):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT
+                product_id,
+                product_name,
+                selling_price,
+                gst_percent,
+                stock_quantity
+            FROM products
+            WHERE product_name=%s
+            """,
+            (product_name,)
+        )
+
+        product = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        return product
+    
+    @staticmethod
     def update_product(
         product_id,
         product_name,
@@ -135,3 +162,22 @@ class ProductDB:
 
         cursor.close()
         conn.close()
+        
+    @staticmethod
+    def get_product_names():
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+           SELECT product_name
+           FROM products
+           ORDER BY product_name
+        """)
+
+        products = [row[0] for row in cursor.fetchall()]
+
+        cursor.close()
+        conn.close()
+
+        return products
