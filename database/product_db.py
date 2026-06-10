@@ -77,33 +77,61 @@ class ProductDB:
     def update_product(
         product_id,
         product_name,
+        barcode,
+        purchase_price,
         selling_price,
+        gst_percent,
         stock_quantity,
-        gst_percent
+        unit
     ):
 
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute(
-            """
-            UPDATE products
-            SET product_name=%s,
-                selling_price=%s,
-                stock_quantity=%s,
-                gst_percent=%s
-                
+           """
+           UPDATE products
+           SET product_name=%s,
+              barcode=%s,
+              purchase_price=%s,
+              selling_price=%s,
+              gst_percent=%s,
+              stock_quantity=%s,
+              unit=%s
             WHERE product_id=%s
             """,
             (
-                product_name,
-                selling_price,
-                stock_quantity,
-                gst_percent,
-                product_id
+              product_name,
+              barcode,
+              purchase_price,
+              selling_price,
+              gst_percent,
+              stock_quantity,
+              unit,
+              product_id
             )
         )
 
         conn.commit()
+
+        cursor.close()
+        conn.close()
+        
+    @staticmethod
+    def delete_product(product_id):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+           """
+           DELETE FROM products
+           WHERE product_id=%s
+           """,
+           (product_id,)
+        )
+
+        conn.commit()
+
         cursor.close()
         conn.close()

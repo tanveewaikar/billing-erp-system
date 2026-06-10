@@ -48,7 +48,7 @@ class ProductsPage:
         self.update_btn = ctk.CTkButton( btn_frame, text="Update Product",  command=self.update_product)
         self.update_btn.pack(side="left", padx=10)
 
-        self.delete_btn = ctk.CTkButton( btn_frame, text="Delete Product")
+        self.delete_btn = ctk.CTkButton( btn_frame, text="Delete Product", command=self.delete_product)
         self.delete_btn.pack(side="left", padx=10)
 
         table_frame = ctk.CTkFrame(parent)
@@ -56,7 +56,7 @@ class ProductsPage:
         columns = (
             "ID",
             "Product",
-            "Purchase Price"
+            "Purchase Price",
             "Selling Price",
             "Stock",
             "GST",
@@ -184,26 +184,76 @@ class ProductsPage:
     def update_product(self):
 
         if not self.selected_product_id:
+           messagebox.showerror(
+            "Error",
+            "Please select a product"
+           )
+           return
+ 
+        try:
+
+            ProductDB.update_product(
+                self.selected_product_id,
+                self.product_name.get().strip(),
+                self.barcode.get().strip(),
+                float(self.purchase_price.get() or 0),
+                float(self.price.get() or 0),
+                float(self.gst.get() or 0),
+                int(self.stock.get() or 0),
+                self.unit.get().strip() or "pcs"
+            )
+
+            messagebox.showinfo(
+                "Success",
+                "Product updated successfully"
+            )
+
+            self.clear_fields()
+            self.load_products()
+
+            self.selected_product_id = None
+
+        except Exception as e:
             messagebox.showerror(
-              "Error",
-              "Please select a product"
+               "Error",
+               str(e)
+            )
+            
+    def delete_product(self):
+
+        if not self.selected_product_id:
+            messagebox.showerror(
+               "Error",
+               "Please select a product"
             )
             return
 
-        ProductDB.update_product(
-            self.selected_product_id,
-            self.product_name.get(),
-            float(self.price.get()),
-            int(self.stock.get()),
-            float(self.gst.get())
+        confirm = messagebox.askyesno(
+            "Confirm Delete",
+            "Are you sure you want to delete this product?"
         )
 
-        messagebox.showinfo(
-           "Success",
-           "Product updated successfully"
-        )
+        if not confirm:
+           return
 
-        self.clear_fields()
-        self.load_products()
+        try:
 
-        self.selected_product_id = None
+            ProductDB.delete_product(
+               self.selected_product_id
+            )
+
+            messagebox.showinfo(
+               "Success",
+               "Product deleted successfully"
+            )
+
+            self.clear_fields()
+            self.load_products()
+
+            self.selected_product_id = None
+
+        except Exception as e:
+            messagebox.showerror(
+              "Error",
+              str(e)
+            )
