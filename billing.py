@@ -8,7 +8,7 @@ class BillingPage:
 
     def __init__(self, parent):
         
-        self.bill_items = []
+        self.bill_items = {}
         
         self.subtotal_amount = 0
         self.gst_amount = 0
@@ -42,6 +42,9 @@ class BillingPage:
         
         add_btn = ctk.CTkButton(top_frame, text="Add Product",command=self.add_product_to_bill)
         add_btn.pack(side="left", padx=10)
+        
+        remove_btn = ctk.CTkButton(top_frame,text="Remove Product", command=self.remove_product)
+        remove_btn.pack(side="left", padx=10)
 
         table_frame = ctk.CTkFrame(parent)
         table_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -90,7 +93,10 @@ class BillingPage:
         
     def add_product_to_bill(self):
 
+        print("Add Product Clicked")
+
         product_name = self.product_combo.get()
+        print("Product:", product_name)
 
         try:
             qty = int(self.qty.get())
@@ -100,36 +106,80 @@ class BillingPage:
 
         product = ProductDB.get_product_by_name(product_name)
 
+        print("Product from DB:", product)
+
         if not product:
+            print("No product found")
             return
 
         product_id, name, price, gst_percent, stock = product
-        if qty > stock:
-            messagebox.showerror(
-                "Insufficient Stock",
-                f"Only {stock} items available in stock"
-                )
-            return
 
-        subtotal = float(price) * qty
-        gst_amount = subtotal * (float(gst_percent) / 100)
-        total = subtotal + gst_amount
+        print("Before:", self.bill_items)
 
-        self.tree.insert(
-            "",
-            "end",
-            values=(
-                name,
-                qty,
-                f"{price:.2f}",
-                f"{gst_amount:.2f}",
-                f"{total:.2f}"
-            )
-        )
+        if name in self.bill_items:
+
+            print("Existing product")
+
+            new_qty = self.bill_items[name]["qty"] + qty
+
+            if new_qty > stock:
+                print("Stock exceeded")
+                return
+
+            self.bill_items[name]["qty"] = new_qty
+
+        else:
+
+            print("New product")
+
+            self.bill_items[name] = {
+               "qty": qty,
+               "price": float(price),
+               "gst": float(gst_percent)
+            }
+
+        print("After:", self.bill_items)
+
+        self.refresh_bill_table()
+
+        self.qty.delete(0, "end")
         
-        self.subtotal_amount += subtotal
-        self.gst_amount += gst_amount
-        self.grand_total += total
+                
+    def refresh_bill_table(self):
+        
+        print("refresh_bill_table called")
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        self.subtotal_amount = 0
+        self.gst_amount = 0
+        self.grand_total = 0
+
+        for name, data in self.bill_items.items():
+
+            qty = data["qty"]
+            price = data["price"]
+            gst_percent = data["gst"]
+
+            subtotal = price * qty
+            gst_amount = subtotal * gst_percent / 100
+            total = subtotal + gst_amount
+    
+            self.tree.insert(
+               "",
+               "end",
+               values=(
+                    name,
+                    qty,
+                    f"{price:.2f}",
+                    f"{gst_amount:.2f}",
+                    f"{total:.2f}"
+                )
+            )
+
+            self.subtotal_amount += subtotal
+            self.gst_amount += gst_amount
+            self.grand_total += total
 
         self.subtotal_label.configure(
             text=f"Subtotal : ₹{self.subtotal_amount:.2f}"
@@ -142,4 +192,23 @@ class BillingPage:
         self.total_label.configure(
             text=f"Grand Total : ₹{self.grand_total:.2f}"
         )
-        self.qty.delete(0, "end")
+
+    def remove_product(self):
+
+        selected = self.tree.focus()
+
+        if not selected:
+            messagebox.showerror(
+               "Error",
+               "Please select a product"
+            )
+            return
+
+        values = self.tree.item(selected, "values")
+
+        product_name = values[0]
+
+        if product_name in self.bill_items:
+            del self.bill_items[product_name]
+ 
+        self.refresh_bill_table()
