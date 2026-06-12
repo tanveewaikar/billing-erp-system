@@ -3,6 +3,7 @@ from tkinter import ttk
 from database.customer_db import CustomerDB
 from database.product_db import ProductDB
 from tkinter import ttk, messagebox
+from database.invoice_db import InvoiceDB
 
 class BillingPage:
 
@@ -82,7 +83,7 @@ class BillingPage:
         btn_frame = ctk.CTkFrame(parent)
         btn_frame.pack(fill="x", padx=20, pady=20)
 
-        generate_btn = ctk.CTkButton(btn_frame, text="Generate Invoice")
+        generate_btn = ctk.CTkButton(btn_frame, text="Generate Invoice", command=self.generate_invoice)
         generate_btn.pack(side="left", padx=10)
 
         print_btn = ctk.CTkButton(btn_frame, text="Print")
@@ -192,6 +193,42 @@ class BillingPage:
         self.total_label.configure(
             text=f"Grand Total : ₹{self.grand_total:.2f}"
         )
+        
+    def generate_invoice(self):
+
+       print("Generate Invoice Clicked")
+
+       from datetime import datetime
+
+       invoice_number = (
+           "INV-" +
+           datetime.now().strftime("%Y%m%d%H%M%S")
+       )
+
+       print(invoice_number)
+
+       customer_name = self.customer.get()
+  
+       customer = CustomerDB.get_customer_by_name(
+        customer_name
+       )
+
+       print(customer)
+
+       if not customer:
+           print("Customer not found")
+           return
+
+       customer_id = customer[0]
+
+       invoice_id = InvoiceDB.create_invoice(
+           invoice_number,
+           customer_id,
+           self.subtotal_amount,
+           self.grand_total
+       )
+
+       print("Invoice ID:", invoice_id)  
 
     def remove_product(self):
 

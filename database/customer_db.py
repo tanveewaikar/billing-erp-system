@@ -156,6 +156,28 @@ class CustomerDB:
 
         return customers
     
+    @staticmethod
+    def get_customer_by_name(customer_name):
+
+       conn = get_connection()
+       cursor = conn.cursor()
+
+       cursor.execute(
+       """
+          SELECT customer_id, customer_name
+          FROM customers
+          WHERE customer_name=%s
+          """,
+          (customer_name,)
+        )
+
+       customer = cursor.fetchone()
+
+       cursor.close()
+       conn.close()
+
+       return customer
+     
     def close_connection(self):
 
         self.cursor.close()
