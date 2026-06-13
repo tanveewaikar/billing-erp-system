@@ -4,6 +4,8 @@ from database.customer_db import CustomerDB
 from database.product_db import ProductDB
 from tkinter import ttk, messagebox
 from database.invoice_db import InvoiceDB
+from utils.pdf_generator import generate_pdf
+
 
 class BillingPage:
 
@@ -262,6 +264,15 @@ class BillingPage:
             )
 
         print("Invoice ID:", invoice_id)  
+        
+        generate_pdf(
+            invoice_number,
+            customer_name,
+            self.bill_items,
+            self.subtotal_amount,
+            self.gst_amount,
+            self.grand_total
+        )
             
         self.bill_items.clear()
 
