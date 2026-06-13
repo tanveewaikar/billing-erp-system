@@ -195,40 +195,82 @@ class BillingPage:
         )
         
     def generate_invoice(self):
+        
+        
+        if not self.bill_items:
+          messagebox.showerror(
+            "Error",
+            "Please add products to the invoice"
+          )
+          return
 
-       print("Generate Invoice Clicked")
+        from datetime import datetime
 
-       from datetime import datetime
-
-       invoice_number = (
+        invoice_number = (
            "INV-" +
            datetime.now().strftime("%Y%m%d%H%M%S")
-       )
+        )
 
-       print(invoice_number)
+        print(invoice_number)
 
-       customer_name = self.customer.get()
+        customer_name = self.customer.get()
   
-       customer = CustomerDB.get_customer_by_name(
+        customer = CustomerDB.get_customer_by_name(
         customer_name
-       )
+        )
 
-       print(customer)
+        print(customer)
 
-       if not customer:
+        if not customer:
            print("Customer not found")
            return
 
-       customer_id = customer[0]
+        customer_id = customer[0]
 
-       invoice_id = InvoiceDB.create_invoice(
+        invoice_id = InvoiceDB.create_invoice(
            invoice_number,
            customer_id,
            self.subtotal_amount,
            self.grand_total
        )
+       
+        for product_name, data in self.bill_items.items():
 
-       print("Invoice ID:", invoice_id)  
+            product_id = ProductDB.get_product_id_by_name(
+                product_name
+            )
+
+            qty = data["qty"]
+            price = data["price"]
+            gst_percent = data["gst"]
+
+            subtotal = price * qty
+
+            total_price = subtotal + (
+                subtotal * gst_percent / 100
+            )
+ 
+            print(product_name)
+
+            InvoiceDB.add_invoice_item(
+                invoice_id,
+                product_id,
+                qty,
+                price,
+                gst_percent,
+                total_price
+            )
+
+        print("Invoice ID:", invoice_id)  
+            
+        self.bill_items.clear()
+
+        self.refresh_bill_table()
+
+        messagebox.showinfo(
+            "Success",
+            f"Invoice {invoice_number} generated successfully"
+        )
 
     def remove_product(self):
 

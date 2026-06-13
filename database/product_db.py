@@ -181,3 +181,53 @@ class ProductDB:
         conn.close()
 
         return products
+    
+    @staticmethod
+    def get_product_id_by_name(product_name):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT product_id
+            FROM products
+            WHERE product_name=%s
+            """,
+            (product_name,)
+        )
+
+        product = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        return product[0] if product else None
+    
+    @staticmethod
+    def reduce_stock(product_id, quantity):
+        
+        print(
+            f"BEFORE UPDATE -> Product ID={product_id}, Qty={quantity}"
+        )
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            UPDATE products
+            SET stock_quantity = stock_quantity - %s
+            WHERE product_id = %s
+            AND stock_quantity >= %s
+            """,
+            (
+                quantity,
+                product_id,
+                quantity
+            )
+        )
+        print("Rows affected:", cursor.rowcount)
+        conn.commit()
+
+        cursor.close()
+        conn.close()
