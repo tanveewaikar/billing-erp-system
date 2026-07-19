@@ -1,5 +1,6 @@
 from database.db_connection import get_connection
 
+
 class InvoiceDB:
     pass
 
@@ -82,3 +83,29 @@ class InvoiceDB:
 
         cursor.close()
         conn.close()
+        
+    @staticmethod
+    def get_all_invoices():
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                i.invoice_id,
+                i.invoice_number,
+                c.customer_name,
+                i.invoice_date,
+                i.grand_total
+            FROM invoices i
+            LEFT JOIN customers c
+                ON i.customer_id = c.customer_id
+            ORDER BY i.invoice_id DESC
+        """)
+
+        invoices = cursor.fetchall()
+        print(invoices)   # <-- Add this line
+        cursor.close()
+        conn.close()
+
+        return invoices
