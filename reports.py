@@ -35,7 +35,14 @@ class ReportsPage:
            command=self.search_invoice
         )
         search_btn.pack(side="left", padx=10)
-
+        
+        show_all_btn = ctk.CTkButton(
+            filter_frame,
+            text="Show All",
+            command=self.show_all_invoices
+        )
+        show_all_btn.pack(side="left", padx=10)
+        
         # graph = ctk.CTkFrame(parent, height=300)
         # graph.pack(fill="x", padx=20, pady=20)
 
@@ -117,3 +124,14 @@ class ReportsPage:
 
         for invoice in invoices:
             self.tree.insert("", "end", values=invoice)
+            
+    def show_all_invoices(self):
+
+        self.search_entry.delete(0, "end")
+
+        # Clear table
+        for item in self.tree.get_children():
+           self.tree.delete(item)
+
+        # Load all invoices
+        self.load_invoices()
