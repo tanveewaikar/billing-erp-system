@@ -109,3 +109,33 @@ class InvoiceDB:
         conn.close()
 
         return invoices
+    
+    @staticmethod
+    def search_invoices(keyword):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                i.invoice_id,
+                i.invoice_number,
+                c.customer_name,
+                i.invoice_date,
+                i.grand_total
+            FROM invoices i
+            LEFT JOIN customers c
+                ON i.customer_id = c.customer_id
+            WHERE
+                i.invoice_number LIKE %s
+                OR c.customer_name LIKE %s
+            ORDER BY i.invoice_id DESC
+            """, (f"%{keyword}%", f"%{keyword}%"))
+
+        invoices = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return invoices
+

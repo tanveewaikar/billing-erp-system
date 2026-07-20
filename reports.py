@@ -2,19 +2,6 @@ import customtkinter as ctk
 from tkinter import ttk
 from database.invoice_db import InvoiceDB
 
-style = ttk.Style()
-style.theme_use("default")
-
-style.configure(
-    "Treeview",
-    rowheight=28,
-    font=("Segoe UI", 11)
-)
-
-style.configure(
-    "Treeview.Heading",
-    font=("Segoe UI", 11, "bold")
-)
 
 class ReportsPage:
 
@@ -30,35 +17,50 @@ class ReportsPage:
         filter_frame = ctk.CTkFrame(parent)
         filter_frame.pack(fill="x", padx=20)
 
-        from_date = ctk.CTkEntry(
-            filter_frame,
-            placeholder_text="From Date"
+        self.search_entry = ctk.CTkEntry(
+           filter_frame,
+           placeholder_text="Search by Invoice No or Customer"
         )
-        from_date.pack(side="left", padx=10, pady=10)
-
+        self.search_entry.pack(side="left", padx=10, pady=10)
+        
         to_date = ctk.CTkEntry(
             filter_frame,
             placeholder_text="To Date"
         )
         to_date.pack(side="left", padx=10)
 
-        generate = ctk.CTkButton(
-            filter_frame,
-            text="Generate Report"
+        search_btn = ctk.CTkButton(
+           filter_frame,
+           text="Search",
+           command=self.search_invoice
         )
-        generate.pack(side="left", padx=10)
+        search_btn.pack(side="left", padx=10)
 
-        graph = ctk.CTkFrame(parent, height=300)
-        graph.pack(fill="x", padx=20, pady=20)
+        # graph = ctk.CTkFrame(parent, height=300)
+        # graph.pack(fill="x", padx=20, pady=20)
 
-        graph_label = ctk.CTkLabel(
-            graph,
-            text="Sales Graph Area"
-        )
-        graph_label.pack(pady=120)
+        # graph_label = ctk.CTkLabel(
+        #     graph,
+        #     text="Sales Graph Area"
+        # )
+        # graph_label.pack(pady=120)
 
         table_frame = ctk.CTkFrame(parent)
         table_frame.pack(fill="both", expand=True, padx=20, pady=20)
+        
+        style = ttk.Style()
+        style.theme_use("default")
+
+        style.configure(
+           "Treeview",
+            rowheight=28,
+            font=("Segoe UI", 11)
+        )
+
+        style.configure(
+           "Treeview.Heading",
+            font=("Segoe UI", 11, "bold")
+        )
 
         columns = (
             "Invoice ID",
@@ -71,7 +73,8 @@ class ReportsPage:
         self.tree = ttk.Treeview(
             table_frame,
             columns=columns,
-            show="headings"
+            show="headings",
+            height = 12
         )
 
         for col in columns:
@@ -85,12 +88,8 @@ class ReportsPage:
             
 
         self.tree.pack(fill="both", expand=True, padx=20,pady=20)
-        # new line added
-        print("Tree children:", self.tree.get_children()) 
-        
+       
         self.load_invoices()
-        # new line added 
-        print("Tree children after loading:", self.tree.get_children())
         
     # def load_invoices(self):
 
@@ -103,9 +102,18 @@ class ReportsPage:
 
         invoices = InvoiceDB.get_all_invoices()
 
-        print("Total invoices:", len(invoices))
+        for invoice in invoices:
+           self.tree.insert("", "end", values=invoice)
+    
+    def search_invoice(self):
+
+        keyword = self.search_entry.get().strip()
+
+        # Clear old data
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        invoices = InvoiceDB.search_invoices(keyword)
 
         for invoice in invoices:
-           print("Inserting:", invoice)
-           self.tree.insert("", "end", values=invoice)
-           
+            self.tree.insert("", "end", values=invoice)
