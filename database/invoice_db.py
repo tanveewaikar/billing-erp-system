@@ -188,5 +188,5 @@ class InvoiceDB:
 
         cursor.close()
         conn.close()
-        
+        return items
     

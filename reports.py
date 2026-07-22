@@ -221,3 +221,34 @@ class ReportsPage:
         )
         grand_total.pack(anchor="w", padx=20, pady=5)
         
+        product_frame = ctk.CTkFrame(details_window)
+        product_frame.pack(fill="both", expand=True, padx=20, pady=15)
+        
+        columns = (
+            "Product",
+            "Quantity",
+            "Price",
+            "GST %",
+             "Total"
+        )
+
+        product_tree = ttk.Treeview(
+        product_frame,
+        columns=columns,
+        show="headings",
+        height=8
+        )
+
+        for col in columns:
+            product_tree.heading(col, text=col)
+
+        product_tree.column("Product", width=220)
+        product_tree.column("Quantity", width=80, anchor="center")
+        product_tree.column("Price", width=100, anchor="center")
+        product_tree.column("GST %", width=80, anchor="center")
+        product_tree.column("Total", width=120, anchor="center")
+
+        product_tree.pack(fill="both", expand=True)
+        
+        for item in items:
+            product_tree.insert("", "end", values=item)
