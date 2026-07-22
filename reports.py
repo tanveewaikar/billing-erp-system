@@ -231,14 +231,21 @@ class ReportsPage:
             "GST %",
              "Total"
         )
-
+        
+        scrollbar = ttk.Scrollbar(
+            product_frame,
+            orient="vertical"
+        )
+        
         product_tree = ttk.Treeview(
         product_frame,
         columns=columns,
         show="headings",
-        height=8
+        height=8,
+        yscrollcommand=scrollbar.set
         )
-
+        scrollbar.config(command=product_tree.yview)
+        
         for col in columns:
             product_tree.heading(col, text=col)
 
@@ -247,8 +254,9 @@ class ReportsPage:
         product_tree.column("Price", width=100, anchor="center")
         product_tree.column("GST %", width=80, anchor="center")
         product_tree.column("Total", width=120, anchor="center")
-
-        product_tree.pack(fill="both", expand=True)
+        
+        scrollbar.pack(side="right", fill="y")
+        product_tree.pack(side="left", fill="both", expand=True)
         
         for item in items:
             product_tree.insert("", "end", values=item)
