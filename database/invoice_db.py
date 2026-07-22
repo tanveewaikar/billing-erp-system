@@ -139,3 +139,30 @@ class InvoiceDB:
 
         return invoices
 
+    @staticmethod
+    def get_invoices_by_date(from_date, to_date):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+          SELECT
+            i.invoice_id,
+            i.invoice_number,
+            c.customer_name,
+            i.invoice_date,
+            i.grand_total
+          FROM invoices i
+          LEFT JOIN customers c
+            ON i.customer_id = c.customer_id
+          WHERE DATE(i.invoice_date)
+          BETWEEN %s AND %s
+          ORDER BY i.invoice_id DESC
+        """, (from_date, to_date))
+        invoices = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return invoices
+    
