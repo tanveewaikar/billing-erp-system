@@ -6,7 +6,7 @@ from database.invoice_db import InvoiceDB
 class ReportsPage:
 
     def __init__(self, parent):
-
+        self.parent = parent 
         title = ctk.CTkLabel(
             parent,
             text="Reports & Analytics",
@@ -181,6 +181,43 @@ class ReportsPage:
 
         items = InvoiceDB.get_invoice_items(invoice_id)
 
-        print("Invoice ID:", invoice_id)
-        print(items)
+        details_window = ctk.CTkToplevel(self.parent)
+
+        details_window.title("Invoice Details")
+        details_window.geometry("700x500")
+
+        title = ctk.CTkLabel(
+            details_window,
+            text="Invoice Details",
+            font=("Arial", 22, "bold")
+        )
+
+        title.pack(pady=15)
+        invoice_no = ctk.CTkLabel(
+            details_window,
+            text=f"Invoice No : {values[1]}",
+            font=("Arial", 16)
+        )
+        invoice_no.pack(anchor="w", padx=20, pady=5)
+
+        customer = ctk.CTkLabel(
+            details_window,
+            text=f"Customer : {values[2]}",
+            font=("Arial", 16)
+        )
+        customer.pack(anchor="w", padx=20, pady=5)
+
+        date = ctk.CTkLabel(
+            details_window,
+            text=f"Date : {values[3]}",
+            font=("Arial", 16)
+        )
+        date.pack(anchor="w", padx=20, pady=5)
+
+        grand_total = ctk.CTkLabel(
+            details_window,
+            text=f"Grand Total : ₹{values[4]}",
+            font=("Arial", 16, "bold")
+        )
+        grand_total.pack(anchor="w", padx=20, pady=5)
         
