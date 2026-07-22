@@ -165,3 +165,28 @@ class InvoiceDB:
 
         return invoices
     
+    @staticmethod
+    def get_invoice_items(invoice_id):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+               p.product_name,
+               ii.quantity,
+               ii.price,
+               ii.gst_percent,
+               ii.total_price
+            FROM invoice_items ii
+            JOIN products p
+               ON ii.product_id = p.product_id
+            WHERE ii.invoice_id = %s
+        """, (invoice_id,))
+
+        items = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+        
+    

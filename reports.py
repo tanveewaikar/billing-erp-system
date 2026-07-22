@@ -177,5 +177,10 @@ class ReportsPage:
 
         values = self.tree.item(selected, "values")
 
-        print(values)
+        invoice_id = values[0]
+
+        items = InvoiceDB.get_invoice_items(invoice_id)
+
+        print("Invoice ID:", invoice_id)
+        print(items)
         
