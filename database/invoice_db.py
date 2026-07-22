@@ -104,7 +104,6 @@ class InvoiceDB:
         """)
 
         invoices = cursor.fetchall()
-        print(invoices)   # <-- Add this line
         cursor.close()
         conn.close()
 

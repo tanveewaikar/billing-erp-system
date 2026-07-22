@@ -23,11 +23,27 @@ class ReportsPage:
         )
         self.search_entry.pack(side="left", padx=10, pady=10)
         
-        to_date = ctk.CTkEntry(
+        self.from_date_entry = ctk.CTkEntry(
             filter_frame,
-            placeholder_text="To Date"
+            placeholder_text="YYYY-MM-DD",
+            width=140
         )
-        to_date.pack(side="left", padx=10)
+        self.from_date_entry.pack(side="left", padx=10, pady=10)
+
+        self.to_date_entry = ctk.CTkEntry(
+            filter_frame,
+            placeholder_text="YYYY-MM-DD",
+            width=140
+        )
+        self.to_date_entry.pack(side="left", padx=10)
+        
+        filter_btn = ctk.CTkButton(
+            filter_frame,
+            text="Filter Date",
+            command=self.filter_by_date
+        )
+
+        filter_btn.pack(side="left", padx=10)
 
         search_btn = ctk.CTkButton(
            filter_frame,
@@ -95,15 +111,10 @@ class ReportsPage:
             
 
         self.tree.pack(fill="both", expand=True, padx=20,pady=20)
+        
+        self.tree.bind("<Double-1>", self.open_invoice)
        
         self.load_invoices()
-        
-    # def load_invoices(self):
-
-    #     invoices = InvoiceDB.get_all_invoices()
-
-    #     for invoice in invoices:
-    #         self.tree.insert("", "end", values=invoice)
     
     def load_invoices(self):
 
@@ -132,6 +143,39 @@ class ReportsPage:
         # Clear table
         for item in self.tree.get_children():
            self.tree.delete(item)
+           
+         # Clear date fields
+        self.from_date_entry.delete(0, "end")
+        self.to_date_entry.delete(0, "end")
 
         # Load all invoices
         self.load_invoices()
+        
+    def filter_by_date(self):
+
+        from_date = self.from_date_entry.get().strip()
+        to_date = self.to_date_entry.get().strip()
+
+        # Clear old rows
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        invoices = InvoiceDB.get_invoices_by_date(
+            from_date,
+            to_date
+        )
+
+        for invoice in invoices:
+            self.tree.insert("", "end", values=invoice)
+            
+    def open_invoice(self, event):
+
+        selected = self.tree.focus()
+
+        if not selected:
+           return
+
+        values = self.tree.item(selected, "values")
+
+        print(values)
+        

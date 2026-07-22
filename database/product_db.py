@@ -226,7 +226,7 @@ class ProductDB:
                 quantity
             )
         )
-        print("Rows affected:", cursor.rowcount)
+        # print("Rows affected:", cursor.rowcount)
         conn.commit()
 
         cursor.close()
