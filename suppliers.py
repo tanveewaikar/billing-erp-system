@@ -1,5 +1,6 @@
 import customtkinter as ctk
-from tkinter import ttk
+from tkinter import ttk, messagebox
+from database.suppliers_db import SupplierDB
 
 
 class SuppliersPage:
@@ -61,7 +62,8 @@ class SuppliersPage:
 
         self.add_btn = ctk.CTkButton(
             btn_frame,
-            text="Add Supplier"
+            text="Add Supplier",
+            command=self.add_supplier
         )
         self.add_btn.pack(side="left", padx=10)
 
@@ -109,3 +111,47 @@ class SuppliersPage:
             self.tree.column(col, width=180)
 
         self.tree.pack(fill="both", expand=True)
+        
+    def add_supplier(self):
+
+        supplier_name = self.supplier_name.get().strip()
+        contact_person = self.contact_person.get().strip()
+        phone = self.phone.get().strip()
+        email = self.email.get().strip()
+        address = self.address.get().strip()
+        if not supplier_name:
+           messagebox.showerror(
+            "Error",
+            "Supplier name is required."
+           )
+           return
+        try:
+
+           SupplierDB.add_supplier(
+            supplier_name,
+            contact_person,
+            phone,
+            email,
+            address
+           )
+           
+           messagebox.showinfo(
+            "Success",
+            "Supplier added successfully."
+           )
+           self.clear_fields()
+        
+        except Exception as e:
+
+            messagebox.showerror(
+             "Error",
+             str(e)
+            )   
+            
+    def clear_fields(self):
+
+        self.supplier_name.delete(0, "end")
+        self.contact_person.delete(0, "end")
+        self.phone.delete(0, "end")
+        self.email.delete(0, "end")
+        self.address.delete(0, "end")
