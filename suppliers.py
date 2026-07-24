@@ -111,6 +111,12 @@ class SuppliersPage:
             self.tree.column(col, width=180)
 
         self.tree.pack(fill="both", expand=True)
+        self.tree.bind(
+          "<<TreeviewSelect>>",
+          self.on_row_select
+        )
+
+        self.load_suppliers()
         
     def add_supplier(self):
 
@@ -134,6 +140,7 @@ class SuppliersPage:
             email,
             address
            )
+           self.load_suppliers();
            
            messagebox.showinfo(
             "Success",
@@ -155,3 +162,41 @@ class SuppliersPage:
         self.phone.delete(0, "end")
         self.email.delete(0, "end")
         self.address.delete(0, "end")
+        
+    def load_suppliers(self):
+
+        for item in self.tree.get_children():
+           self.tree.delete(item)
+
+        suppliers = SupplierDB.get_all_suppliers()
+
+        for supplier in suppliers:
+
+           self.tree.insert(
+              "",
+              "end",
+              values=supplier
+            )
+           
+    def on_row_select(self, event):
+        selected = self.tree.focus()
+        if not selected:
+           return
+        values = self.tree.item(selected, "values")
+
+        self.selected_supplier_id = values[0]
+
+        self.supplier_name.delete(0, "end")
+        self.supplier_name.insert(0, values[1])
+
+        self.contact_person.delete(0, "end")
+        self.contact_person.insert(0, values[2])
+
+        self.phone.delete(0, "end")
+        self.phone.insert(0, values[3])
+
+        self.email.delete(0, "end")
+        self.email.insert(0, values[4])
+
+        self.address.delete(0, "end")
+        self.address.insert(0, values[5])
