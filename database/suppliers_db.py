@@ -62,3 +62,65 @@ class SupplierDB:
         connection.close()
 
         return suppliers
+    
+    
+    @staticmethod
+    def update_supplier(
+       supplier_id,
+       supplier_name,
+       contact_person,
+       phone,
+       email,
+       address
+    ):
+
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        query = """
+        UPDATE suppliers
+        SET
+           supplier_name = %s,
+           contact_person = %s,
+           phone = %s,
+           email = %s,
+           address = %s
+        WHERE supplier_id = %s
+        """
+
+        cursor.execute(
+           query,
+            (
+              supplier_name,
+              contact_person,
+              phone,
+              email,
+              address,
+              supplier_id
+            )
+        )
+
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+        
+    @staticmethod
+    def delete_supplier(supplier_id):
+
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        query = """
+        DELETE FROM suppliers
+        WHERE supplier_id = %s
+        """
+
+        cursor.execute(query, (supplier_id,))
+
+        connection.commit()
+
+        cursor.close()
+        connection.close()
+        
+    

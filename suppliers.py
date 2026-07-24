@@ -69,13 +69,15 @@ class SuppliersPage:
 
         self.update_btn = ctk.CTkButton(
             btn_frame,
-            text="Update Supplier"
+            text="Update Supplier",
+            command=self.update_supplier
         )
         self.update_btn.pack(side="left", padx=10)
 
         self.delete_btn = ctk.CTkButton(
             btn_frame,
-            text="Delete Supplier"
+            text="Delete Supplier",
+            command=self.delete_supplier
         )
         self.delete_btn.pack(side="left", padx=10)
 
@@ -200,3 +202,84 @@ class SuppliersPage:
 
         self.address.delete(0, "end")
         self.address.insert(0, values[5])
+        
+    def update_supplier(self):
+
+        if not self.selected_supplier_id:
+            messagebox.showerror(
+               "Error",
+               "Please select a supplier."
+            )
+            return
+
+        try:
+
+            SupplierDB.update_supplier(
+                self.selected_supplier_id,
+                self.supplier_name.get().strip(),
+                self.contact_person.get().strip(),
+                self.phone.get().strip(),
+                self.email.get().strip(),
+                self.address.get().strip()
+            )
+
+            messagebox.showinfo(
+                "Success",
+                "Supplier updated successfully."
+            )
+
+            self.clear_fields()
+            self.load_suppliers()
+  
+            self.selected_supplier_id = None
+
+        except Exception as e:
+
+            messagebox.showerror(
+               "Error",
+               str(e)
+            )
+            
+            
+    def delete_supplier(self):
+
+        if not self.selected_supplier_id:
+            messagebox.showerror(
+                "Error",
+                "Please select a supplier."
+            )
+            return
+
+        confirm = messagebox.askyesno(
+            "Confirm Delete",
+            "Are you sure you want to delete this supplier?"
+        )
+
+        if not confirm:
+            return
+
+        try:
+
+            SupplierDB.delete_supplier(
+                self.selected_supplier_id
+            )
+
+            messagebox.showinfo(
+               "Success",
+               "Supplier deleted successfully."
+            )
+
+            self.clear_fields()
+            self.load_suppliers()
+
+            self.selected_supplier_id = None
+
+        except Exception as e:
+
+            messagebox.showerror(
+               "Error",
+                str(e)
+            )
+            
+    
+    
