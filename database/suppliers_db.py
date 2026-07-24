@@ -123,4 +123,26 @@ class SupplierDB:
         cursor.close()
         connection.close()
         
+    @staticmethod
+    def search_supplier(keyword):
+
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        query = """
+        SELECT *
+        FROM suppliers
+        WHERE supplier_name LIKE %s
+        ORDER BY supplier_id DESC
+        """
+
+        cursor.execute(query, (f"%{keyword}%",))
+
+        suppliers = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        return suppliers
+    
     

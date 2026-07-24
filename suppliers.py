@@ -80,7 +80,35 @@ class SuppliersPage:
             command=self.delete_supplier
         )
         self.delete_btn.pack(side="left", padx=10)
+        
+        # ==========================
+            # Search bar
+        # ==========================
+        
+        search_frame = ctk.CTkFrame(parent)
+        search_frame.pack(fill="x", padx=20, pady=10)
 
+        self.search_entry = ctk.CTkEntry(
+            search_frame,
+            placeholder_text="Search Supplier...",
+            width=300
+        )
+        self.search_entry.pack(side="left", padx=10)
+
+        self.search_btn = ctk.CTkButton(
+            search_frame,
+            text="Search",
+            command=self.search_supplier
+        )
+        self.search_btn.pack(side="left", padx=10)
+
+        self.show_all_btn = ctk.CTkButton(
+            search_frame,
+            text="Show All",
+            command=self.load_suppliers
+        )
+        self.show_all_btn.pack(side="left", padx=10)
+        
         # ==========================
         # Table
         # ==========================
@@ -282,4 +310,21 @@ class SuppliersPage:
             )
             
     
+    def search_supplier(self):
+
+        keyword = self.search_entry.get().strip()
+
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        suppliers = SupplierDB.search_supplier(keyword)
+
+        for supplier in suppliers:
+
+            self.tree.insert(
+                "",
+                "end",
+                values=supplier
+            )
+            
     
