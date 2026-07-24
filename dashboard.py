@@ -7,6 +7,7 @@ from customers import CustomersPage
 from products import ProductsPage
 from billing import BillingPage
 from reports import ReportsPage
+from suppliers import SuppliersPage
 from dashboard_page import DashboardPage
 
 class Dashboard:
@@ -59,7 +60,12 @@ class Dashboard:
             "📦 Products",
             self.show_products
         )
-
+        
+        self.create_sidebar_button(
+            "🚚 Suppliers",
+            self.show_suppliers
+        )
+        
         self.create_sidebar_button(
             "🧾 Billing",
             self.show_billing
@@ -175,6 +181,15 @@ class Dashboard:
         page.pack(fill="both", expand=True)
 
         ProductsPage(page)
+        
+    def show_suppliers(self):
+
+        self.clear_content()
+
+        page = ctk.CTkFrame(self.content_frame)
+        page.pack(fill="both", expand=True)
+
+        SuppliersPage(page)
 
     def show_billing(self):
 
