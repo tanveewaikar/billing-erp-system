@@ -205,6 +205,10 @@ class PurchasesPage:
             self.tree.column(col, width=150)
 
         self.tree.pack(fill="both", expand=True)
+        self.tree.bind(
+            "<<TreeviewSelect>>",
+            self.on_row_select
+        )
         
         
     def load_suppliers(self):
@@ -312,4 +316,31 @@ class PurchasesPage:
         for purchase in purchases:
             self.tree.insert("", "end", values=purchase)
             
+    def on_row_select(self, event):
+
+        selected = self.tree.focus()
+
+        if not selected:
+           return
+
+        values = self.tree.item(selected, "values")
+
+        self.selected_purchase_id = values[0]
+
+        self.supplier_combo.set(values[1])
+        self.product_combo.set(values[2])
+
+        self.quantity.delete(0, "end")
+        self.quantity.insert(0, values[3])
+
+        self.purchase_price.delete(0, "end")
+        self.purchase_price.insert(0, values[4])
+
+        self.total_amount.configure(state="normal")
+        self.total_amount.delete(0, "end")
+        self.total_amount.insert(0, values[5])
+        self.total_amount.configure(state="readonly")
+
+        self.payment_status.set(values[6])
+        
     
