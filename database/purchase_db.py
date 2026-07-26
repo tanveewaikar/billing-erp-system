@@ -102,6 +102,19 @@ class PurchaseDB:
                     total_amount
                 )
             )
+            
+            # Increase Product Stock
+            cursor.execute(
+                """
+                UPDATE products
+                SET stock_quantity = stock_quantity + %s
+                WHERE product_id = %s
+                """,
+                (
+                    quantity,
+                    product_id
+                )
+            )
 
             conn.commit()
 
@@ -115,4 +128,35 @@ class PurchaseDB:
             cursor.close()
             conn.close()
             
+    @staticmethod
+    def get_all_purchases():
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                p.purchase_id,
+                s.supplier_name,
+                pr.product_name,
+                pi.quantity,
+                pi.purchase_price,
+                pi.total_price,
+                p.payment_status,
+                p.purchase_date
+            FROM purchases p
+            JOIN suppliers s
+                ON p.supplier_id = s.supplier_id
+            JOIN purchase_items pi
+                ON p.purchase_id = pi.purchase_id
+            JOIN products pr
+                ON pi.product_id = pr.product_id
+            ORDER BY p.purchase_date DESC
+        """)
+
+        purchases = cursor.fetchall()
+
+        conn.close()
+        return purchases
+    
     

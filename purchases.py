@@ -198,6 +198,7 @@ class PurchasesPage:
         
         self.load_suppliers()
         self.load_products()
+        self.load_purchases()
         
         for col in columns:
             self.tree.heading(col, text=col)
@@ -287,7 +288,8 @@ class PurchasesPage:
                total_amount,
                payment_status
             )
-
+            self.load_purchases()
+            
             messagebox.showinfo(
                "Success",
                "Purchase added successfully."
@@ -299,5 +301,15 @@ class PurchasesPage:
               "Error",
               str(e)
             )
+            
+    def load_purchases(self):
+
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        purchases = PurchaseDB.get_all_purchases()
+
+        for purchase in purchases:
+            self.tree.insert("", "end", values=purchase)
             
     
