@@ -175,10 +175,18 @@ class PurchaseDB:
 
         try:
             
-            # Get old purchase details
-            old_purchase = PurchaseDB.get_purchase_by_id(purchase_id)
-            old_product_id = old_purchase[0]
-            old_quantity = old_purchase[1]
+            cursor.execute(
+                """
+                SELECT
+                    product_id,
+                    quantity
+                FROM purchase_items
+                WHERE purchase_id=%s
+                """,
+                (purchase_id,)
+            )
+
+            old_product_id, old_quantity = cursor.fetchone()
             
             # Restore old stock
             cursor.execute(
@@ -249,31 +257,6 @@ class PurchaseDB:
            cursor.close()
            conn.close()
            
-    @staticmethod
-    def get_purchase_by_id(purchase_id):
-
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute(
-            """
-            SELECT
-               product_id,
-               quantity
-            FROM purchase_items
-            WHERE purchase_id = %s
-            """,
-            (purchase_id,)
-        )
-
-        purchase = cursor.fetchone()
-
-        cursor.close()
-        conn.close()
-
-        return purchase
-    
-    
     @staticmethod
     def delete_purchase(purchase_id):
 

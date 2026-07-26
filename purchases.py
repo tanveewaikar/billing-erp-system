@@ -274,7 +274,9 @@ class PurchasesPage:
             self.total_amount.configure(state="readonly")
             
     def add_purchase(self):
-
+        
+        if not self.validate_purchase():
+           return
         try:
 
             supplier_name = self.supplier_combo.get()
@@ -348,7 +350,10 @@ class PurchasesPage:
         self.payment_status.set(values[6])
         
     def update_purchase(self):
-
+        
+        if not self.validate_purchase():
+           return
+    
         if not self.selected_purchase_id:
             messagebox.showwarning(
                "Warning",
@@ -422,4 +427,72 @@ class PurchasesPage:
 
         self.selected_purchase_id = None
         
-    
+    def validate_purchase(self):
+
+        if self.supplier_combo.get() == "Select Supplier":
+            messagebox.showwarning(
+                "Validation Error",
+                "Please select a supplier."
+            )
+            return False
+
+        if self.product_combo.get() == "Select Product":
+            messagebox.showwarning(
+                "Validation Error",
+                "Please select a product."
+            )
+            return False
+
+        if self.purchase_price.get().strip() == "":
+            messagebox.showwarning(
+                "Validation Error",
+                "Purchase price is required."
+            )
+            return False
+
+        if self.quantity.get().strip() == "":
+            messagebox.showwarning(
+                "Validation Error",
+                 "Quantity is required."
+            )
+            return False
+
+        try:
+
+            price = float(self.purchase_price.get())
+
+            if price <= 0:
+                messagebox.showwarning(
+                    "Validation Error",
+                    "Purchase price must be greater than zero."
+                )
+                return False
+
+        except ValueError:
+
+            messagebox.showwarning(
+                "Validation Error",
+                "Invalid purchase price."
+            )
+            return False
+
+        try:
+
+            qty = int(self.quantity.get())
+
+            if qty <= 0:
+                messagebox.showwarning(
+                    "Validation Error",
+                    "Quantity must be greater than zero."
+                )
+                return False
+ 
+        except ValueError:
+
+            messagebox.showwarning(
+                "Validation Error",
+                "Invalid quantity."
+            )
+            return False
+
+        return True
