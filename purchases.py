@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import ttk
+from database.purchase_db import PurchaseDB
 
 
 class PurchasesPage:
@@ -114,7 +115,10 @@ class PurchasesPage:
             columns=columns,
             show="headings"
         )
-
+        
+        self.load_suppliers()
+        self.load_products()
+        
         for col in columns:
             self.tree.heading(col, text=col)
             self.tree.column(col, width=150)
@@ -122,3 +126,40 @@ class PurchasesPage:
         self.tree.pack(fill="both", expand=True)
         
         
+    def load_suppliers(self):
+
+        suppliers = PurchaseDB.get_all_suppliers()
+
+        self.supplier_dict = {}
+
+        supplier_names = []
+
+        for supplier_id, supplier_name in suppliers:
+
+           supplier_names.append(supplier_name)
+           self.supplier_dict[supplier_name] = supplier_id
+
+           self.supplier_combo.configure(values=supplier_names)
+
+        if supplier_names:
+           self.supplier_combo.set(supplier_names[0])
+           
+    def load_products(self):
+
+        products = PurchaseDB.get_all_products()
+
+        self.product_dict = {}
+
+        product_names = []
+
+        for product_id, product_name in products:
+
+           product_names.append(product_name)
+           self.product_dict[product_name] = product_id
+
+           self.product_combo.configure(values=product_names)
+
+        if product_names:
+           self.product_combo.set(product_names[0])
+           
+    
