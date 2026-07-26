@@ -27,10 +27,12 @@ class PurchasesPage:
         form = ctk.CTkFrame(parent)
         form.pack(fill="x", padx=20)
 
+        # ---------- Row 0 ----------
+
         # Supplier
         ctk.CTkLabel(
-           form,
-           text="Supplier"
+            form,
+            text="Supplier"
         ).grid(row=0, column=0, padx=10, pady=10, sticky="w")
 
         self.supplier_combo = ctk.CTkComboBox(
@@ -44,52 +46,56 @@ class PurchasesPage:
         ctk.CTkLabel(
             form,
             text="Product"
-        ).grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        
+        ).grid(row=0, column=2, padx=10, pady=10, sticky="w")
+
         self.product_combo = ctk.CTkComboBox(
             form,
             values=[],
             width=220
         )
-        self.product_combo.grid(row=0, column=1, padx=10, pady=10)
+        self.product_combo.grid(row=0, column=3, padx=10, pady=10)
+
+
+        # ---------- Row 1 ----------
 
         # Purchase Price
         ctk.CTkLabel(
             form,
-            text="Purchase"
-        ).grid(row=0, column=0, padx=10, pady=10, sticky="w")
-               
-        self.purchase_combo = ctk.CTkComboBox(
+            text="Purchase Price"
+        ).grid(row=1, column=0, padx=10, pady=10, sticky="w")
+
+        self.purchase_price = ctk.CTkEntry(
             form,
-            values=[],
             width=220
         )
-        self.purchase_combo.grid(row=0, column=1, padx=10, pady=10)
-        
+        self.purchase_price.grid(row=1, column=1, padx=10, pady=10)
+
         self.purchase_price.bind(
             "<KeyRelease>",
             self.calculate_total
         )
-        
+
         # Quantity
         ctk.CTkLabel(
             form,
             text="Quantity"
-        ).grid(row=0, column=0, padx=10, pady=10, sticky="w")
-                
-        self.quantity_combo = ctk.CTkComboBox(
+            ).grid(row=1, column=2, padx=10, pady=10, sticky="w")
+
+        self.quantity = ctk.CTkEntry(
             form,
-            values=[],
             width=220
         )
-        self.quantity_combo.grid(row=0, column=1, padx=10, pady=10)
-        
+        self.quantity.grid(row=1, column=3, padx=10, pady=10)
+
         self.quantity.bind(
             "<KeyRelease>",
             self.calculate_total
         )
-        
-        #Total Amount
+
+
+        # ---------- Row 2 ----------
+
+        # Total Amount
         ctk.CTkLabel(
             form,
             text="Total Amount"
@@ -101,19 +107,20 @@ class PurchasesPage:
             state="readonly"
         )
         self.total_amount.grid(row=2, column=1, padx=10, pady=10)
-        
+
         # Payment Status
         ctk.CTkLabel(
             form,
-            text="Payment"
+            text="Payment Status"
         ).grid(row=2, column=2, padx=10, pady=10, sticky="w")
-                
-        self.payment_combo = ctk.CTkComboBox(
+
+        self.payment_status = ctk.CTkComboBox(
             form,
-            values=[],
+            values=["Paid", "Pending"],
             width=220
         )
-        self.payment_combo.grid(row=0, column=1, padx=10, pady=10)
+        self.payment_status.set("Pending")
+        self.payment_status.grid(row=2, column=3, padx=10, pady=10)
 
         # ==========================
         # BUTTONS
@@ -135,12 +142,15 @@ class PurchasesPage:
             command=self.update_purchase
         )
         self.update_btn.pack(side="left", padx=10)
+        self.update_btn.configure(state="disabled")
 
         self.delete_btn = ctk.CTkButton(
             btn_frame,
-            text="Delete Purchase"
+            text="Delete Purchase",
+            command=self.delete_purchase
         )
         self.delete_btn.pack(side="left", padx=10)
+        self.delete_btn.configure(state="disabled")
         
         self.clear_btn = ctk.CTkButton(
             btn_frame,
@@ -200,19 +210,27 @@ class PurchasesPage:
             show="headings"
         )
         
-        self.load_suppliers()
-        self.load_products()
-        self.load_purchases()
         
         for col in columns:
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=150)
+        self.tree.column("Purchase ID", width=90, anchor="center")
+        self.tree.column("Supplier", width=180)
+        self.tree.column("Product", width=180)
+        self.tree.column("Quantity", width=90, anchor="center")
+        self.tree.column("Purchase Price", width=120, anchor="e")
+        self.tree.column("Total Amount", width=120, anchor="e")
+        self.tree.column("Payment Status", width=110, anchor="center")
+        self.tree.column("Purchase Date", width=170)
 
         self.tree.pack(fill="both", expand=True)
         self.tree.bind(
             "<<TreeviewSelect>>",
             self.on_row_select
         )
+        
+        self.load_suppliers()
+        self.load_products()
+        self.load_purchases()
         
         
     def load_suppliers(self):
@@ -298,13 +316,14 @@ class PurchasesPage:
                total_amount,
                payment_status
             )
-            self.load_purchases()
             
             messagebox.showinfo(
                "Success",
                "Purchase added successfully."
             )
-
+            self.load_purchases()
+            self.clear_fields()
+            
         except Exception as e:
 
             messagebox.showerror(
@@ -312,6 +331,7 @@ class PurchasesPage:
               str(e)
             )
             
+        
     def load_purchases(self):
 
         for item in self.tree.get_children():
@@ -332,6 +352,8 @@ class PurchasesPage:
         values = self.tree.item(selected, "values")
 
         self.selected_purchase_id = values[0]
+        self.update_btn.configure(state="normal")
+        self.delete_btn.configure(state="normal")
 
         self.supplier_combo.set(values[1])
         self.product_combo.set(values[2])
@@ -387,6 +409,7 @@ class PurchasesPage:
             )
 
             self.load_purchases()
+            self.clear_fields()
 
         except Exception as e:
             messagebox.showerror(
@@ -394,9 +417,50 @@ class PurchasesPage:
                str(e)
             )
             
-    def search_purchase(self):
+    def delete_purchase(self):
 
+        if not self.selected_purchase_id:
+            messagebox.showwarning(
+                "Warning",
+                "Please select a purchase."
+            )
+            return
+
+        confirm = messagebox.askyesno(
+            "Confirm Delete",
+            "Are you sure you want to delete this purchase?"
+        )
+
+        if not confirm:
+            return
+
+        try:
+
+            PurchaseDB.delete_purchase(self.selected_purchase_id)
+
+            messagebox.showinfo(
+                "Success",
+                "Purchase deleted successfully."
+            )
+
+            self.load_purchases()
+            self.clear_fields()
+
+        except Exception as e:
+
+            messagebox.showerror(
+                "Error",
+                str(e)
+            )
+            
+            
+    def search_purchase(self):
+        
         keyword = self.search_entry.get()
+        
+        if not keyword.strip():
+            self.load_purchases()
+            return
 
         purchases = PurchaseDB.search_purchase(keyword)
 
@@ -412,8 +476,11 @@ class PurchasesPage:
         
     def clear_fields(self):
 
-        self.supplier_combo.set("Select Supplier")
-        self.product_combo.set("Select Product")
+        if self.supplier_combo.cget("values"):
+            self.supplier_combo.set(self.supplier_combo.cget("values")[0])
+            
+        if self.product_combo.cget("values"):
+            self.product_combo.set(self.product_combo.cget("values")[0])
 
         self.purchase_price.delete(0, "end")
         self.quantity.delete(0, "end")
@@ -426,22 +493,10 @@ class PurchasesPage:
         self.payment_status.set("Pending")
 
         self.selected_purchase_id = None
+        self.update_btn.configure(state="disabled")
+        self.delete_btn.configure(state="disabled")
         
     def validate_purchase(self):
-
-        if self.supplier_combo.get() == "Select Supplier":
-            messagebox.showwarning(
-                "Validation Error",
-                "Please select a supplier."
-            )
-            return False
-
-        if self.product_combo.get() == "Select Product":
-            messagebox.showwarning(
-                "Validation Error",
-                "Please select a product."
-            )
-            return False
 
         if self.purchase_price.get().strip() == "":
             messagebox.showwarning(
