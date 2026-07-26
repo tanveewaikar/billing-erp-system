@@ -335,4 +335,46 @@ class PurchaseDB:
            cursor.close()
            conn.close()
            
+    @staticmethod
+    def search_purchase(keyword):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT
+               p.purchase_id,
+               s.supplier_name,
+               pr.product_name,
+               pi.quantity,
+               pi.purchase_price,
+               pi.total_price,
+               p.payment_status,
+               p.purchase_date
+            FROM purchases p
+            JOIN suppliers s
+               ON p.supplier_id = s.supplier_id
+            JOIN purchase_items pi
+               ON p.purchase_id = pi.purchase_id
+            JOIN products pr
+               ON pi.product_id = pr.product_id
+            WHERE
+               s.supplier_name LIKE %s
+               OR pr.product_name LIKE %s
+            ORDER BY p.purchase_date DESC
+            """,
+            (
+              f"%{keyword}%",
+              f"%{keyword}%"
+            )
+        )
+
+        purchases = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return purchases
+    
     

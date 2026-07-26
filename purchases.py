@@ -144,7 +144,8 @@ class PurchasesPage:
         
         self.clear_btn = ctk.CTkButton(
             btn_frame,
-            text="Clear"
+            text="Clear",
+            command=self.clear_fields
         )
         self.clear_btn.pack(side="left", padx=10)
         
@@ -163,13 +164,15 @@ class PurchasesPage:
 
         self.search_btn = ctk.CTkButton(
             search_frame,
-            text="Search"
+            text="Search",
+            command=self.search_purchase
         )
         self.search_btn.pack(side="left", padx=10)
 
         self.show_all_btn = ctk.CTkButton(
             search_frame,
-            text="Show All"
+            text="Show All",
+            command=self.show_all_purchases
         )
         self.show_all_btn.pack(side="left", padx=10)
 
@@ -386,4 +389,37 @@ class PurchasesPage:
                str(e)
             )
             
+    def search_purchase(self):
+
+        keyword = self.search_entry.get()
+
+        purchases = PurchaseDB.search_purchase(keyword)
+
+        self.tree.delete(*self.tree.get_children())
+
+        for purchase in purchases:
+            self.tree.insert("", "end", values=purchase)
+            
+    def show_all_purchases(self):
+
+        self.search_entry.delete(0, "end")
+        self.load_purchases()
+        
+    def clear_fields(self):
+
+        self.supplier_combo.set("Select Supplier")
+        self.product_combo.set("Select Product")
+
+        self.purchase_price.delete(0, "end")
+        self.quantity.delete(0, "end")
+
+        self.total_amount.configure(state="normal")
+        self.total_amount.delete(0, "end")
+        self.total_amount.insert(0, "0.00")
+        self.total_amount.configure(state="readonly")
+
+        self.payment_status.set("Pending")
+
+        self.selected_purchase_id = None
+        
     
