@@ -66,6 +66,11 @@ class PurchasesPage:
         )
         self.purchase_combo.grid(row=0, column=1, padx=10, pady=10)
         
+        self.purchase_price.bind(
+            "<KeyRelease>",
+            self.calculate_total
+        )
+        
         # Quantity
         ctk.CTkLabel(
             form,
@@ -78,6 +83,11 @@ class PurchasesPage:
             width=220
         )
         self.quantity_combo.grid(row=0, column=1, padx=10, pady=10)
+        
+        self.quantity.bind(
+            "<KeyRelease>",
+            self.calculate_total
+        )
         
         #Total Amount
         ctk.CTkLabel(
@@ -231,4 +241,26 @@ class PurchasesPage:
         if product_names:
            self.product_combo.set(product_names[0])
            
+           
+    def calculate_total(self, event=None):
+
+        try:
+
+            price = float(self.purchase_price.get() or 0)
+            quantity = int(self.quantity.get() or 0)
+
+            total = price * quantity
+
+            self.total_amount.configure(state="normal")
+            self.total_amount.delete(0, "end")
+            self.total_amount.insert(0, f"{total:.2f}")
+            self.total_amount.configure(state="readonly")
+
+        except ValueError:
+
+            self.total_amount.configure(state="normal")
+            self.total_amount.delete(0, "end")
+            self.total_amount.insert(0, "0.00")
+            self.total_amount.configure(state="readonly")
+            
     
