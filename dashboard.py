@@ -8,6 +8,7 @@ from products import ProductsPage
 from billing import BillingPage
 from reports import ReportsPage
 from suppliers import SuppliersPage
+from purchases import PurchasesPage
 from dashboard_page import DashboardPage
 
 class Dashboard:
@@ -66,6 +67,10 @@ class Dashboard:
             self.show_suppliers
         )
         
+        self.create_sidebar_button(
+            "🛒 Purchases",
+            self.show_purchases
+        )
         self.create_sidebar_button(
             "🧾 Billing",
             self.show_billing
@@ -190,7 +195,16 @@ class Dashboard:
         page.pack(fill="both", expand=True)
 
         SuppliersPage(page)
+    
+    def show_purchases(self):
 
+       self.clear_content()
+
+       page = ctk.CTkFrame(self.content_frame)
+       page.pack(fill="both", expand=True)
+
+       PurchasesPage(page)
+    
     def show_billing(self):
 
         self.clear_content()

@@ -28,45 +28,82 @@ class PurchasesPage:
         form.pack(fill="x", padx=20)
 
         # Supplier
+        ctk.CTkLabel(
+           form,
+           text="Supplier"
+        ).grid(row=0, column=0, padx=10, pady=10, sticky="w")
+
         self.supplier_combo = ctk.CTkComboBox(
             form,
             values=[],
             width=220
         )
-        self.supplier_combo.set("Select Supplier")
-        self.supplier_combo.grid(row=0, column=0, padx=10, pady=10)
+        self.supplier_combo.grid(row=0, column=1, padx=10, pady=10)
 
         # Product
+        ctk.CTkLabel(
+            form,
+            text="Product"
+        ).grid(row=0, column=0, padx=10, pady=10, sticky="w")
+        
         self.product_combo = ctk.CTkComboBox(
             form,
             values=[],
             width=220
         )
-        self.product_combo.set("Select Product")
         self.product_combo.grid(row=0, column=1, padx=10, pady=10)
 
         # Purchase Price
-        self.purchase_price = ctk.CTkEntry(
+        ctk.CTkLabel(
             form,
-            placeholder_text="Purchase Price"
-        )
-        self.purchase_price.grid(row=1, column=0, padx=10, pady=10)
-
-        # Quantity
-        self.quantity = ctk.CTkEntry(
+            text="Purchase"
+        ).grid(row=0, column=0, padx=10, pady=10, sticky="w")
+               
+        self.purchase_combo = ctk.CTkComboBox(
             form,
-            placeholder_text="Quantity"
-        )
-        self.quantity.grid(row=1, column=1, padx=10, pady=10)
-
-        # Payment Status
-        self.payment_status = ctk.CTkComboBox(
-            form,
-            values=["Paid", "Pending"],
+            values=[],
             width=220
         )
-        self.payment_status.set("Pending")
-        self.payment_status.grid(row=2, column=0, padx=10, pady=10)
+        self.purchase_combo.grid(row=0, column=1, padx=10, pady=10)
+        
+        # Quantity
+        ctk.CTkLabel(
+            form,
+            text="Quantity"
+        ).grid(row=0, column=0, padx=10, pady=10, sticky="w")
+                
+        self.quantity_combo = ctk.CTkComboBox(
+            form,
+            values=[],
+            width=220
+        )
+        self.quantity_combo.grid(row=0, column=1, padx=10, pady=10)
+        
+        #Total Amount
+        ctk.CTkLabel(
+            form,
+            text="Total Amount"
+        ).grid(row=2, column=0, padx=10, pady=10, sticky="w")
+
+        self.total_amount = ctk.CTkEntry(
+            form,
+            width=220,
+            state="readonly"
+        )
+        self.total_amount.grid(row=2, column=1, padx=10, pady=10)
+        
+        # Payment Status
+        ctk.CTkLabel(
+            form,
+            text="Payment"
+        ).grid(row=2, column=2, padx=10, pady=10, sticky="w")
+                
+        self.payment_combo = ctk.CTkComboBox(
+            form,
+            values=[],
+            width=220
+        )
+        self.payment_combo.grid(row=0, column=1, padx=10, pady=10)
 
         # ==========================
         # BUTTONS
@@ -92,6 +129,37 @@ class PurchasesPage:
             text="Delete Purchase"
         )
         self.delete_btn.pack(side="left", padx=10)
+        
+        self.clear_btn = ctk.CTkButton(
+            btn_frame,
+            text="Clear"
+        )
+        self.clear_btn.pack(side="left", padx=10)
+        
+        # ==========================
+        # SEARCH 
+        # ==========================
+        search_frame = ctk.CTkFrame(parent)
+        search_frame.pack(fill="x", padx=20, pady=10)
+
+        self.search_entry = ctk.CTkEntry(
+            search_frame,
+            placeholder_text="Search Purchase...",
+            width=300
+        )
+        self.search_entry.pack(side="left", padx=10)
+
+        self.search_btn = ctk.CTkButton(
+            search_frame,
+            text="Search"
+        )
+        self.search_btn.pack(side="left", padx=10)
+
+        self.show_all_btn = ctk.CTkButton(
+            search_frame,
+            text="Show All"
+        )
+        self.show_all_btn.pack(side="left", padx=10)
 
         # ==========================
         # TABLE
@@ -104,10 +172,11 @@ class PurchasesPage:
             "Purchase ID",
             "Supplier",
             "Product",
-            "Purchase Price",
             "Quantity",
+            "Purchase Price",
+            "Total Amount",
             "Payment Status",
-            "Date"
+            "Purchase Date"
         )
 
         self.tree = ttk.Treeview(
@@ -139,7 +208,7 @@ class PurchasesPage:
            supplier_names.append(supplier_name)
            self.supplier_dict[supplier_name] = supplier_id
 
-           self.supplier_combo.configure(values=supplier_names)
+        self.supplier_combo.configure(values=supplier_names)
 
         if supplier_names:
            self.supplier_combo.set(supplier_names[0])
@@ -157,7 +226,7 @@ class PurchasesPage:
            product_names.append(product_name)
            self.product_dict[product_name] = product_id
 
-           self.product_combo.configure(values=product_names)
+        self.product_combo.configure(values=product_names)
 
         if product_names:
            self.product_combo.set(product_names[0])
