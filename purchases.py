@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from database.purchase_db import PurchaseDB
 
 
@@ -124,7 +124,8 @@ class PurchasesPage:
 
         self.add_btn = ctk.CTkButton(
             btn_frame,
-            text="Add Purchase"
+            text="Add Purchase",
+            command=self.add_purchase
         )
         self.add_btn.pack(side="left", padx=10)
 
@@ -262,5 +263,41 @@ class PurchasesPage:
             self.total_amount.delete(0, "end")
             self.total_amount.insert(0, "0.00")
             self.total_amount.configure(state="readonly")
+            
+    def add_purchase(self):
+
+        try:
+
+            supplier_name = self.supplier_combo.get()
+            product_name = self.product_combo.get()
+
+            supplier_id = self.supplier_dict[supplier_name]
+            product_id = self.product_dict[product_name]
+
+            purchase_price = float(self.purchase_price.get())
+            quantity = int(self.quantity.get())
+            total_amount = float(self.total_amount.get())
+            payment_status = self.payment_status.get()
+
+            PurchaseDB.add_purchase(
+               supplier_id,
+               product_id,
+               quantity,
+               purchase_price,
+               total_amount,
+               payment_status
+            )
+
+            messagebox.showinfo(
+               "Success",
+               "Purchase added successfully."
+            )
+
+        except Exception as e:
+
+            messagebox.showerror(
+              "Error",
+              str(e)
+            )
             
     

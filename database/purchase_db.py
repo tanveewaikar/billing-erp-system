@@ -45,3 +45,74 @@ class PurchaseDB:
         connection.close()
 
         return products
+    
+    @staticmethod
+    def add_purchase(
+        supplier_id,
+        product_id,
+        quantity,
+        purchase_price,
+        total_amount,
+        payment_status
+    ):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        try:
+
+            # Insert into purchases table
+            cursor.execute(
+                """
+                INSERT INTO purchases
+                (
+                    supplier_id,
+                    total_amount,
+                    payment_status
+                )
+                VALUES (%s, %s, %s)
+                """,
+                (
+                    supplier_id,
+                    total_amount,
+                    payment_status
+                )
+            )
+
+            purchase_id = cursor.lastrowid
+
+            # Insert into purchase_items table
+            cursor.execute(
+                """
+                INSERT INTO purchase_items
+                (
+                    purchase_id,
+                    product_id,
+                    quantity,
+                    purchase_price,
+                    total_price
+                )
+                VALUES (%s, %s, %s, %s, %s)
+                """,
+                (
+                    purchase_id,
+                    product_id,
+                    quantity,
+                    purchase_price,
+                    total_amount
+                )
+            )
+
+            conn.commit()
+
+            return purchase_id
+
+        except Exception:
+            conn.rollback()
+            raise
+
+        finally:
+            cursor.close()
+            conn.close()
+            
+    

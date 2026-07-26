@@ -226,8 +226,31 @@ class ProductDB:
                 quantity
             )
         )
-        # print("Rows affected:", cursor.rowcount)
         conn.commit()
 
         cursor.close()
         conn.close()
+        
+    @staticmethod
+    def increase_stock(product_id, quantity):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+           """
+           UPDATE products
+           SET stock_quantity = stock_quantity + %s
+           WHERE product_id = %s
+           """,
+           (
+            quantity,
+            product_id
+           )
+        )
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+    
