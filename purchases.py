@@ -131,7 +131,8 @@ class PurchasesPage:
 
         self.update_btn = ctk.CTkButton(
             btn_frame,
-            text="Update Purchase"
+            text="Update Purchase",
+            command=self.update_purchase
         )
         self.update_btn.pack(side="left", padx=10)
 
@@ -343,4 +344,46 @@ class PurchasesPage:
 
         self.payment_status.set(values[6])
         
+    def update_purchase(self):
+
+        if not self.selected_purchase_id:
+            messagebox.showwarning(
+               "Warning",
+                "Please select a purchase."
+            )
+            return
+
+        try:
+
+            supplier_id = self.supplier_dict[self.supplier_combo.get()]
+            product_id = self.product_dict[self.product_combo.get()]
+
+            quantity = int(self.quantity.get())
+            purchase_price = float(self.purchase_price.get())
+            total_amount = float(self.total_amount.get())
+            payment_status = self.payment_status.get()
+
+            PurchaseDB.update_purchase(
+                self.selected_purchase_id,
+                supplier_id,
+                product_id,
+                quantity,
+                purchase_price,
+                total_amount,
+                payment_status
+            )
+
+            messagebox.showinfo(
+                "Success",
+                "Purchase updated successfully."
+            )
+
+            self.load_purchases()
+
+        except Exception as e:
+            messagebox.showerror(
+               "Error",
+               str(e)
+            )
+            
     

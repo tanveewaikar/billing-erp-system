@@ -159,4 +159,180 @@ class PurchaseDB:
         conn.close()
         return purchases
     
+    @staticmethod
+    def update_purchase(
+        purchase_id,
+        supplier_id,
+        product_id,
+        quantity,
+        purchase_price,
+        total_amount,
+        payment_status
+    ):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        try:
+            
+            # Get old purchase details
+            old_purchase = PurchaseDB.get_purchase_by_id(purchase_id)
+            old_product_id = old_purchase[0]
+            old_quantity = old_purchase[1]
+            
+            # Restore old stock
+            cursor.execute(
+                """
+                UPDATE products
+                SET stock_quantity = stock_quantity - %s
+                WHERE product_id = %s
+                """,
+                (
+                   old_quantity,
+                   old_product_id
+                )
+            )
+            # Update purchases table
+            cursor.execute(
+                """
+                UPDATE purchases
+                SET supplier_id=%s,
+                    total_amount=%s,
+                    payment_status=%s
+                WHERE purchase_id=%s
+                """,
+                (
+                   supplier_id,
+                   total_amount,
+                   payment_status,
+                   purchase_id
+                )
+            )
+
+            # Update purchase_items table
+            cursor.execute(
+                """
+                UPDATE purchase_items
+                SET product_id=%s,
+                    quantity=%s,
+                    purchase_price=%s,
+                    total_price=%s
+                WHERE purchase_id=%s
+                """,
+                (
+                   product_id,
+                   quantity,
+                   purchase_price,
+                   total_amount,
+                   purchase_id
+                )
+            )
+            # Apply new stock
+            cursor.execute(
+                """
+                UPDATE products
+                SET stock_quantity = stock_quantity + %s
+                WHERE product_id = %s
+                """,
+                (
+                    quantity,
+                    product_id
+                )
+            )  
+            conn.commit()
+
+        except Exception:
+           conn.rollback()
+           raise
+
+        finally:
+           cursor.close()
+           conn.close()
+           
+    @staticmethod
+    def get_purchase_by_id(purchase_id):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT
+               product_id,
+               quantity
+            FROM purchase_items
+            WHERE purchase_id = %s
+            """,
+            (purchase_id,)
+        )
+
+        purchase = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        return purchase
+    
+    
+    @staticmethod
+    def delete_purchase(purchase_id):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        try:
+
+            # Get product and quantity
+            cursor.execute(
+                """
+                SELECT product_id, quantity
+                FROM purchase_items
+                WHERE purchase_id=%s
+                """,
+                (purchase_id,)
+            )
+
+            product_id, quantity = cursor.fetchone()
+
+            # Restore stock
+            cursor.execute(
+                """
+                UPDATE products
+                SET stock_quantity = stock_quantity - %s
+                WHERE product_id=%s
+                """,
+                (
+                    quantity,
+                    product_id
+                )
+            )
+
+            # Delete purchase items
+            cursor.execute(
+                """
+                DELETE FROM purchase_items
+                WHERE purchase_id=%s
+                """,
+                (purchase_id,)
+            )
+
+            # Delete purchase
+            cursor.execute(
+                """
+                DELETE FROM purchases
+                WHERE purchase_id=%s
+                """,
+                (purchase_id,)
+            )
+
+            conn.commit()
+
+        except Exception:
+           conn.rollback()
+           raise
+
+        finally:
+           cursor.close()
+           conn.close()
+           
     
