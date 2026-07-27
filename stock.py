@@ -85,3 +85,13 @@ class StockPage(ctk.CTkFrame):
 
         scrollbar.pack(side="right", fill="y")
         self.stock_tree.pack(fill="both", expand=True)
+        self.load_stock()
+        
+    def load_stock(self):
+        for row in self.stock_tree.get_children():
+            self.stock_tree.delete(row)
+
+        stock_data = self.product_db.get_all_stock()
+
+        for stock in stock_data:
+            self.stock_tree.insert("", "end", values=stock)
