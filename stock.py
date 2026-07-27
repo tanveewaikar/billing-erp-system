@@ -41,7 +41,8 @@ class StockPage(ctk.CTkFrame):
 
         self.low_stock_btn = ctk.CTkButton(
             search_frame,
-            text="Low Stock"
+            text="Low Stock",
+            command=self.show_low_stock
         )
         self.low_stock_btn.pack(side="left", padx=5)
 
@@ -97,6 +98,7 @@ class StockPage(ctk.CTkFrame):
         for stock in stock_data:
             self.stock_tree.insert("", "end", values=stock)
             
+            
     def search_stock(self):
         keyword = self.search_entry.get().strip()
 
@@ -109,3 +111,17 @@ class StockPage(ctk.CTkFrame):
             self.stock_tree.insert("", "end", values=stock)
             
             
+    def show_low_stock(self):
+        for row in self.stock_tree.get_children():
+            self.stock_tree.delete(row)
+
+        stock_data = self.product_db.get_low_stock_products()
+
+        for stock in stock_data:
+            self.stock_tree.insert("", "end", values=(
+                stock["product_id"],
+                stock["product_name"],
+                "",
+                stock["stock_quantity"],
+                ""
+            ))
