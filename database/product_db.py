@@ -281,3 +281,19 @@ class ProductDB:
 
         self.cursor.execute(query)
         return self.cursor.fetchall()
+    
+    def search_stock(self, keyword):
+        query = """
+            SELECT
+                product_id,
+                product_name,
+                category,
+                stock_quantity,
+                selling_price
+            FROM products
+            WHERE product_name LIKE %s
+            ORDER BY product_name
+        """
+
+        self.cursor.execute(query, (f"%{keyword}%",))
+        return self.cursor.fetchall()

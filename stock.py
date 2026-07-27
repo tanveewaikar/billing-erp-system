@@ -34,7 +34,8 @@ class StockPage(ctk.CTkFrame):
 
         self.search_btn = ctk.CTkButton(
             search_frame,
-            text="Search"
+            text="Search",
+            command=self.search_stock
         )
         self.search_btn.pack(side="left", padx=5)
 
@@ -95,3 +96,16 @@ class StockPage(ctk.CTkFrame):
 
         for stock in stock_data:
             self.stock_tree.insert("", "end", values=stock)
+            
+    def search_stock(self):
+        keyword = self.search_entry.get().strip()
+
+        for row in self.stock_tree.get_children():
+            self.stock_tree.delete(row)
+
+        stock_data = self.product_db.search_stock(keyword)
+
+        for stock in stock_data:
+            self.stock_tree.insert("", "end", values=stock)
+            
+            
