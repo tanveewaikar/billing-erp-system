@@ -88,6 +88,7 @@ class StockPage(ctk.CTkFrame):
 
         scrollbar.pack(side="right", fill="y")
         self.stock_tree.pack(fill="both", expand=True)
+        self.stock_tree.bind("<Double-1>", self.open_stock_history)
         self.load_stock()
         
     def load_stock(self):
@@ -131,4 +132,19 @@ class StockPage(ctk.CTkFrame):
         self.search_entry.delete(0, "end")
         self.load_stock()
         
+    def open_stock_history(self, event):
+        selected = self.stock_tree.focus()
+
+        if not selected:
+           return
+
+        values = self.stock_tree.item(selected, "values")
+
+        product_id = values[0]
+
+        product = self.product_db.get_product_name(product_id)
+
+        if not product:
+           return
+       
     
