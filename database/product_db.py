@@ -253,4 +253,31 @@ class ProductDB:
         cursor.close()
         conn.close()
         
-    
+    def get_all_stock(self):
+        query = """
+            SELECT
+                product_id,
+                product_name,
+                category,
+                stock_quantity,
+                selling_price
+            FROM products
+            ORDER BY product_name
+        """
+
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+
+
+    def get_low_stock_products(self):
+        query = """
+            SELECT
+                product_id,
+                product_name,
+                stock_quantity
+            FROM low_stock_products
+            ORDER BY stock_quantity
+        """
+
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
