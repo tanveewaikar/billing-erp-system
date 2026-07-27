@@ -262,7 +262,11 @@ class BillingPage:
                 gst_percent,
                 total_price
             )
-
+            
+            ProductDB.reduce_stock(
+                product_id,
+                qty
+            )
         print("Invoice ID:", invoice_id)  
         
         generate_pdf(

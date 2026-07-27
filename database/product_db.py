@@ -206,26 +206,48 @@ class ProductDB:
     
     @staticmethod
     def reduce_stock(product_id, quantity):
-        
-        print(
-            f"BEFORE UPDATE -> Product ID={product_id}, Qty={quantity}"
-        )
+
         conn = get_connection()
         cursor = conn.cursor()
 
+        # Current stock
         cursor.execute(
             """
-            UPDATE products
-            SET stock_quantity = stock_quantity - %s
+            SELECT stock_quantity
+            FROM products
             WHERE product_id = %s
-            AND stock_quantity >= %s
             """,
-            (
-                quantity,
-                product_id,
-                quantity
-            )
+           (product_id,)
         )
+
+        before = cursor.fetchone()[0]
+        print("Stock Before:", before)
+
+        # Reduce stock
+        cursor.execute(
+           """
+           UPDATE products
+           SET stock_quantity = stock_quantity - %s
+           WHERE product_id = %s
+           """,
+           (quantity, product_id)
+        )
+
+        print("Rows Updated:", cursor.rowcount)
+
+        # Check stock again
+        cursor.execute(
+            """
+            SELECT stock_quantity
+            FROM products
+            WHERE product_id = %s
+            """,
+            (product_id,)
+        )
+
+        after = cursor.fetchone()[0]
+        print("Stock After:", after)
+
         conn.commit()
 
         cursor.close()
@@ -338,14 +360,24 @@ class ProductDB:
 
         return stock
 
-    def get_product_name(self, product_id):
-        query = """
-           SELECT product_name
-           FROM products
-           WHERE product_id = %s
-        """
+    @staticmethod
+    def get_product_name(product_id):
 
-        self.cursor.execute(query, (product_id,))
-        return self.cursor.fetchone()
-    
-    
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT product_name
+            FROM products
+            WHERE product_id = %s
+            """,
+            (product_id,)
+        )
+
+        product = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        return product
