@@ -297,3 +297,34 @@ class ProductDB:
 
         self.cursor.execute(query, (f"%{keyword}%",))
         return self.cursor.fetchall()
+    
+    def get_stock_history(self, product_id):
+        query = """
+            SELECT
+               change_type,
+               quantity_changed,
+               previous_stock,
+               new_stock,
+               reference_type,
+               reference_id,
+               created_at
+            FROM stock_logs
+            WHERE product_id = %s
+            ORDER BY created_at DESC
+        """
+
+        self.cursor.execute(query, (product_id,))
+        return self.cursor.fetchall()
+
+
+    def get_product_name(self, product_id):
+        query = """
+           SELECT product_name
+           FROM products
+           WHERE product_id = %s
+        """
+
+        self.cursor.execute(query, (product_id,))
+        return self.cursor.fetchone()
+    
+    
