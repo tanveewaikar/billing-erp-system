@@ -5,6 +5,7 @@ from database.product_db import ProductDB
 from tkinter import ttk, messagebox
 from database.invoice_db import InvoiceDB
 from utils.pdf_generator import generate_pdf
+from database.stock_log_db import StockLogDB
 
 
 class BillingPage:
@@ -263,10 +264,21 @@ class BillingPage:
                 total_price
             )
             
-            ProductDB.reduce_stock(
+            previous_stock, new_stock = ProductDB.reduce_stock(
                 product_id,
                 qty
             )
+            
+            StockLogDB.add_stock_log(
+                product_id=product_id,
+                change_type="OUT",
+                quantity_changed=qty,
+                previous_stock=previous_stock,
+                new_stock=new_stock,
+                reference_type="Invoice",
+                reference_id=invoice_id
+            )
+            
         print("Invoice ID:", invoice_id)  
         
         generate_pdf(
