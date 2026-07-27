@@ -210,32 +210,7 @@ class ProductDB:
         conn = get_connection()
         cursor = conn.cursor()
 
-        # Current stock
-        cursor.execute(
-            """
-            SELECT stock_quantity
-            FROM products
-            WHERE product_id = %s
-            """,
-           (product_id,)
-        )
-
-        before = cursor.fetchone()[0]
-        print("Stock Before:", before)
-
-        # Reduce stock
-        cursor.execute(
-           """
-           UPDATE products
-           SET stock_quantity = stock_quantity - %s
-           WHERE product_id = %s
-           """,
-           (quantity, product_id)
-        )
-
-        print("Rows Updated:", cursor.rowcount)
-
-        # Check stock again
+        # Get current stock
         cursor.execute(
             """
             SELECT stock_quantity
@@ -245,14 +220,32 @@ class ProductDB:
             (product_id,)
         )
 
-        after = cursor.fetchone()[0]
-        print("Stock After:", after)
+        previous_stock = cursor.fetchone()[0]
+
+        # Reduce stock
+        cursor.execute(
+            """
+            UPDATE products
+            SET stock_quantity = stock_quantity - %s
+            WHERE product_id = %s
+            AND stock_quantity >= %s
+            """,
+            (
+                quantity,
+                product_id,
+                quantity
+            )
+        )
+
+        new_stock = previous_stock - quantity
 
         conn.commit()
 
         cursor.close()
         conn.close()
-        
+
+        return previous_stock, new_stock
+   
     @staticmethod
     def increase_stock(product_id, quantity):
 
