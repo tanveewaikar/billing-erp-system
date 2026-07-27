@@ -133,7 +133,13 @@ class BillingPage:
             self.bill_items[name]["qty"] = new_qty
 
         else:
-
+            if qty > stock:
+                messagebox.showerror(
+                    "Stock Error",
+                    f"Only {stock} item(s) available in stock."
+                )
+                return
+            
             print("New product")
 
             self.bill_items[name] = {
