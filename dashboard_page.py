@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from tkinter import ttk
-
+from database.dashboard_db import DashboardDB
 
 class DashboardPage:
 
@@ -25,13 +25,13 @@ class DashboardPage:
         self.create_card(
             cards_frame,
             "Customers",
-            "150"
+            DashboardDB.get_total_customers()
         )
 
         self.create_card(
             cards_frame,
             "Products",
-            "320"
+             DashboardDB.get_total_products()
         )
 
         self.create_card(
