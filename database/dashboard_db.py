@@ -70,4 +70,20 @@ class DashboardDB:
 
         return total
     
-    
+    @staticmethod
+    def get_low_stock_count():
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM products
+            WHERE stock_quantity <= 10
+        """)
+
+        total = cursor.fetchone()[0]
+
+        conn.close()
+
+        return total

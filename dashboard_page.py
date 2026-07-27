@@ -39,6 +39,12 @@ class DashboardPage:
             "Suppliers",
             DashboardDB.get_total_suppliers()
         )
+        
+        self.create_card(
+            cards_frame,
+            "Low Stock",
+            DashboardDB.get_low_stock_count()
+        )
 
         # ==========================
         # GRAPH
