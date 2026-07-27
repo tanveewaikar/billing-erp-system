@@ -55,14 +55,14 @@ class DashboardPage:
 
         graph_frame = ctk.CTkFrame(
             parent,
-            height=300,
+            height=220,
             fg_color="white",
             corner_radius=15
         )
 
         graph_frame.pack(
             fill="x",
-            pady=20
+            pady=(15,20)
         )
 
         graph_frame.pack_propagate(False)

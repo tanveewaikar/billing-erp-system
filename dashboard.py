@@ -164,7 +164,10 @@ class Dashboard:
 
         self.clear_content()
 
-        page = ctk.CTkFrame(self.content_frame)
+        page = ctk.CTkScrollableFrame(
+            self.content_frame,
+            fg_color="transparent"
+        )
         page.pack(fill="both", expand=True)
 
         DashboardPage(page)
@@ -173,7 +176,10 @@ class Dashboard:
 
         self.clear_content()
 
-        page = ctk.CTkFrame(self.content_frame)
+        page = ctk.CTkScrollableFrame(
+            self.content_frame,
+            fg_color="transparent"
+        )
         page.pack(fill="both", expand=True)
 
         CustomersPage(page)
@@ -182,7 +188,10 @@ class Dashboard:
 
         self.clear_content()
 
-        page = ctk.CTkFrame(self.content_frame)
+        page = ctk.CTkScrollableFrame(
+            self.content_frame,
+            fg_color="transparent"
+        )
         page.pack(fill="both", expand=True)
 
         ProductsPage(page)
@@ -191,25 +200,34 @@ class Dashboard:
 
         self.clear_content()
 
-        page = ctk.CTkFrame(self.content_frame)
+        page = ctk.CTkScrollableFrame(
+            self.content_frame,
+            fg_color="transparent"
+        )
         page.pack(fill="both", expand=True)
 
         SuppliersPage(page)
     
     def show_purchases(self):
 
-       self.clear_content()
+        self.clear_content()
 
-       page = ctk.CTkFrame(self.content_frame)
-       page.pack(fill="both", expand=True)
+        page = ctk.CTkScrollableFrame(
+           self.content_frame,
+           fg_color="transparent"
+        )
+        page.pack(fill="both", expand=True)
 
-       PurchasesPage(page)
+        PurchasesPage(page)
     
     def show_billing(self):
 
         self.clear_content()
 
-        page = ctk.CTkFrame(self.content_frame)
+        page = ctk.CTkScrollableFrame(
+            self.content_frame,
+            fg_color="transparent"
+        )
         page.pack(fill="both", expand=True)
 
         BillingPage(page)
@@ -218,7 +236,10 @@ class Dashboard:
 
         self.clear_content()
 
-        page = ctk.CTkFrame(self.content_frame)
+        page = ctk.CTkScrollableFrame(
+            self.content_frame,
+            fg_color="transparent"
+        )
         page.pack(fill="both", expand=True)
 
         ReportsPage(page)
