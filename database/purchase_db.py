@@ -103,6 +103,18 @@ class PurchaseDB:
                 )
             )
             
+            # Get current stock before update
+            cursor.execute(
+                """
+                SELECT stock_quantity
+                FROM products
+                WHERE product_id = %s
+                """,
+                (product_id,)
+            )
+
+            previous_stock = cursor.fetchone()[0]
+
             # Increase Product Stock
             cursor.execute(
                 """
@@ -113,6 +125,35 @@ class PurchaseDB:
                 (
                     quantity,
                     product_id
+                )
+            )
+
+            # Calculate new stock
+            new_stock = previous_stock + quantity
+
+            # Save stock movement
+            cursor.execute(
+                """
+                INSERT INTO stock_logs
+                (
+                    product_id,
+                    change_type,
+                    quantity_changed,
+                    previous_stock,
+                    new_stock,
+                    reference_type,
+                    reference_id
+                )
+                VALUES (%s,%s,%s,%s,%s,%s,%s)
+                """,
+                (
+                    product_id,
+                    "IN",
+                    quantity,
+                    previous_stock,
+                    new_stock,
+                    "Purchase",
+                    purchase_id
                 )
             )
 
