@@ -114,7 +114,7 @@ class DashboardPage:
             "Date"
         )
 
-        tree = ttk.Treeview(
+        self.tree = ttk.Treeview(
             table_frame,
             columns=columns,
             show="headings"
@@ -122,25 +122,17 @@ class DashboardPage:
 
         for col in columns:
 
-            tree.heading(col, text=col)
-            tree.column(col, width=150)
+            self.tree.heading(col, text=col)
+            self.tree.column(col, width=150)
 
-        tree.pack(
+        self.tree.pack(
             fill="both",
             expand=True,
             padx=20,
             pady=20
         )
-
-        sample_data = [
-            ("INV001", "Rahul", "₹5000", "Paid", "17-05-2026"),
-            ("INV002", "Aman", "₹3200", "Pending", "17-05-2026"),
-            ("INV003", "Priya", "₹9200", "Paid", "17-05-2026"),
-        ]
-
-        for row in sample_data:
-            tree.insert("", "end", values=row)
-
+        self.load_recent_invoices()
+        
     def create_card(self, parent, title, value, width=170):
 
         card = ctk.CTkFrame(
@@ -176,3 +168,25 @@ class DashboardPage:
         )
 
         value_label.pack(expand=True)
+        
+    def load_recent_invoices(self):
+
+        self.tree.delete(*self.tree.get_children())
+
+        invoices = DashboardDB.get_recent_invoices()
+
+        for invoice in invoices:
+
+            self.tree.insert(
+                "",
+                "end",
+                values=(
+                    invoice["invoice_number"],
+                    invoice["customer_name"],
+                    f"₹{invoice['grand_total']:.2f}",
+                    invoice["payment_status"],
+                    invoice["invoice_date"].strftime("%d-%m-%Y")
+                )
+            )
+            
+    
