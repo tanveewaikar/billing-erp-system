@@ -10,6 +10,8 @@ class DashboardPage:
         # CARDS
         # ==========================
 
+        
+
         cards_frame = ctk.CTkFrame(
             parent,
             fg_color="transparent"
@@ -19,7 +21,8 @@ class DashboardPage:
         self.create_card(
             cards_frame,
             "Today's Sales",
-            f"₹{DashboardDB.get_today_sales():,.2f}"
+            f"₹{DashboardDB.get_today_sales():,.2f}",
+            width=270
         )
 
         self.create_card(
@@ -31,7 +34,7 @@ class DashboardPage:
         self.create_card(
             cards_frame,
             "Products",
-             DashboardDB.get_total_products()
+            DashboardDB.get_total_products()
         )
 
         self.create_card(
@@ -39,7 +42,7 @@ class DashboardPage:
             "Suppliers",
             DashboardDB.get_total_suppliers()
         )
-        
+
         self.create_card(
             cards_frame,
             "Low Stock",
@@ -138,11 +141,11 @@ class DashboardPage:
         for row in sample_data:
             tree.insert("", "end", values=row)
 
-    def create_card(self, parent, title, value):
+    def create_card(self, parent, title, value, width=170):
 
         card = ctk.CTkFrame(
             parent,
-            width=250,
+            width=width,
             height=140,
             fg_color="white",
             corner_radius=15
@@ -169,7 +172,7 @@ class DashboardPage:
         value_label = ctk.CTkLabel(
             card,
             text=value,
-            font=("Segoe UI", 28, "bold")
+            font=("Segoe UI", 24, "bold")
         )
 
-        value_label.pack()
+        value_label.pack(expand=True)
