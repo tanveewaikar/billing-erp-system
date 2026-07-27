@@ -139,4 +139,30 @@ class DashboardDB:
 
         return data
     
-    
+    @staticmethod
+    def get_monthly_sales():
+
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+            SELECT
+                DATE_FORMAT(invoice_date, '%b') AS month,
+                SUM(grand_total) AS total_sales
+            FROM invoices
+            GROUP BY
+                YEAR(invoice_date),
+                MONTH(invoice_date),
+                DATE_FORMAT(invoice_date, '%b')
+            ORDER BY
+                YEAR(invoice_date),
+                MONTH(invoice_date)
+        """
+
+        cursor.execute(query)
+
+        sales = cursor.fetchall()
+
+        conn.close()
+
+        return sales
