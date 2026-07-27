@@ -87,3 +87,33 @@ class DashboardDB:
         conn.close()
 
         return total
+    
+    @staticmethod
+    def get_recent_invoices():
+
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+            SELECT
+                i.invoice_number,
+                c.customer_name,
+                i.grand_total,
+                i.payment_status,
+                i.invoice_date
+            FROM invoices i
+            LEFT JOIN customers c
+                ON i.customer_id = c.customer_id
+            ORDER BY i.invoice_date DESC
+            LIMIT 5
+        """
+
+        cursor.execute(query)
+
+        invoices = cursor.fetchall()
+
+        conn.close()
+
+        return invoices
+    
+    
