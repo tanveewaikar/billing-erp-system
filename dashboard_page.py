@@ -113,17 +113,44 @@ class DashboardPage:
             "Status",
             "Date"
         )
+        
+        style = ttk.Style()
 
+        style.configure(
+            "Treeview.Heading",
+            font=("Segoe UI", 11, "bold")
+        )
+
+        style.configure(
+            "Treeview",
+            rowheight=30,
+            font=("Segoe UI", 10)
+        )
+        
         self.tree = ttk.Treeview(
             table_frame,
             columns=columns,
-            show="headings"
+            show="headings",
+            height=8
         )
 
         for col in columns:
 
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=150)
+            if col == "Invoice No":
+                self.tree.column(col, width=140, anchor="center")
+
+            elif col == "Customer":
+                self.tree.column(col, width=220)
+
+            elif col == "Amount":
+                self.tree.column(col, width=140, anchor="e")
+
+            elif col == "Status":
+                self.tree.column(col, width=120, anchor="center")
+
+            elif col == "Date":
+                self.tree.column(col, width=150, anchor="center")
 
         self.tree.pack(
             fill="both",
