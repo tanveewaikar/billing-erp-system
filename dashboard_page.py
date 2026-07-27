@@ -19,7 +19,7 @@ class DashboardPage:
         self.create_card(
             cards_frame,
             "Today's Sales",
-            "₹25,000"
+            f"₹{DashboardDB.get_today_sales():,.2f}"
         )
 
         self.create_card(

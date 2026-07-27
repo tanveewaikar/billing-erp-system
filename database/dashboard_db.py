@@ -52,4 +52,22 @@ class DashboardDB:
 
         return total
     
+    @staticmethod
+    def get_today_sales():
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT IFNULL(SUM(grand_total), 0)
+            FROM invoices
+            WHERE DATE(invoice_date) = CURDATE()
+        """)
+
+        total = cursor.fetchone()[0]
+
+        conn.close()
+
+        return total
+    
     
