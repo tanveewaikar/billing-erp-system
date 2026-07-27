@@ -132,19 +132,68 @@ class StockPage(ctk.CTkFrame):
         self.search_entry.delete(0, "end")
         self.load_stock()
         
+        
     def open_stock_history(self, event):
         selected = self.stock_tree.focus()
 
         if not selected:
-           return
+            return
 
         values = self.stock_tree.item(selected, "values")
-
         product_id = values[0]
 
         product = self.product_db.get_product_name(product_id)
 
         if not product:
-           return
-       
+            return
+
+        history_window = ctk.CTkToplevel(self)
+        history_window.title(f"Stock History - {product['product_name']}")
+        history_window.geometry("900x450")
+        history_window.grab_set()
+
+        columns = (
+            "Change",
+            "Quantity",
+            "Previous Stock",
+            "New Stock",
+            "Reference",
+            "Reference ID",
+            "Date"
+        )
+
+        scrollbar = ttk.Scrollbar(
+            history_window,
+            orient="vertical"
+        )
+
+        history_tree = ttk.Treeview(
+            history_window,
+            columns=columns,
+            show="headings",
+            yscrollcommand=scrollbar.set
+        )
+
+        scrollbar.config(command=history_tree.yview)
+
+        for col in columns:
+            history_tree.heading(col, text=col)
+            history_tree.column(col, anchor="center", width=120)
+
+        scrollbar.pack(side="right", fill="y")
+        history_tree.pack(fill="both", expand=True, padx=15, pady=15)
+
+        history = self.product_db.get_stock_history(product_id)
+
+        for row in history:
+            history_tree.insert("", "end", values=(
+               row["change_type"],
+               row["quantity_changed"],
+               row["previous_stock"],
+               row["new_stock"],
+               row["reference_type"],
+               row["reference_id"],
+               row["created_at"]
+            )) 
+             
     
