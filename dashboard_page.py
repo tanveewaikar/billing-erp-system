@@ -36,8 +36,8 @@ class DashboardPage:
 
         self.create_card(
             cards_frame,
-            "Invoices",
-            "52"
+            "Suppliers",
+            DashboardDB.get_total_suppliers()
         )
 
         # ==========================
