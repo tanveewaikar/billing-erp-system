@@ -48,7 +48,8 @@ class StockPage(ctk.CTkFrame):
 
         self.show_all_btn = ctk.CTkButton(
             search_frame,
-            text="Show All"
+            text="Show All",
+            command=self.show_all_stock
         )
         self.show_all_btn.pack(side="left", padx=5)
 
@@ -125,3 +126,9 @@ class StockPage(ctk.CTkFrame):
                 stock["stock_quantity"],
                 ""
             ))
+            
+    def show_all_stock(self):
+        self.search_entry.delete(0, "end")
+        self.load_stock()
+        
+    
