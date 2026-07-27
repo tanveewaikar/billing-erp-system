@@ -253,50 +253,90 @@ class ProductDB:
         cursor.close()
         conn.close()
         
-    def get_all_stock(self):
-        query = """
+    @staticmethod
+    def get_all_stock():
+
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("""
             SELECT
-                product_id,
-                product_name,
-                category,
-                stock_quantity,
-                selling_price
-            FROM products
-            ORDER BY product_name
-        """
+               p.product_id,
+               p.product_name,
+               c.category_name,
+               p.stock_quantity,
+               p.selling_price
+            FROM products p
+            JOIN categories c
+               ON p.category_id = c.category_id
+            ORDER BY p.product_name
+        """)
 
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
+        stock = cursor.fetchall()
 
+        cursor.close()
+        conn.close()
 
-    def get_low_stock_products(self):
-        query = """
-            SELECT
-                product_id,
-                product_name,
-                stock_quantity
-            FROM low_stock_products
-            ORDER BY stock_quantity
-        """
+        return stock
 
-        self.cursor.execute(query)
-        return self.cursor.fetchall()
     
-    def search_stock(self, keyword):
-        query = """
-            SELECT
-                product_id,
-                product_name,
-                category,
-                stock_quantity,
-                selling_price
-            FROM products
-            WHERE product_name LIKE %s
-            ORDER BY product_name
-        """
+    @staticmethod
+    def get_low_stock_products():
 
-        self.cursor.execute(query, (f"%{keyword}%",))
-        return self.cursor.fetchall()
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT
+                p.product_id,
+                p.product_name,
+                c.category_name,
+                p.stock_quantity,
+                p.selling_price
+            FROM products p
+            JOIN categories c
+                ON p.category_id = c.category_id
+            WHERE p.stock_quantity <= 5
+            ORDER BY p.stock_quantity
+        """)
+
+        products = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return products
+    
+    @staticmethod
+    def search_stock(keyword):
+
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+                SELECT
+                   p.product_id,
+                   p.product_name,
+                   c.category_name,
+                   p.stock_quantity,
+                   p.selling_price
+                FROM products p
+                JOIN categories c
+                   ON p.category_id = c.category_id
+                WHERE
+                   p.product_name LIKE %s
+                ORDER BY p.product_name
+            """,
+            (f"%{keyword}%",)
+        )
+
+        stock = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return stock
     
     def get_stock_history(self, product_id):
         query = """
