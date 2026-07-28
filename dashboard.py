@@ -10,6 +10,7 @@ from reports import ReportsPage
 from suppliers import SuppliersPage
 from purchases import PurchasesPage
 from dashboard_page import DashboardPage
+from settings import SettingsPage
 
 class Dashboard:
 
@@ -80,7 +81,12 @@ class Dashboard:
             "📊 Reports",
             self.show_reports
         )
-
+        
+        self.create_sidebar_button(
+            "⚙️ Settings",
+            self.show_settings
+        )
+         
         # ==============================
         # HEADER
         # ==============================
@@ -244,6 +250,18 @@ class Dashboard:
 
         ReportsPage(page)
         
+        
+    def show_settings(self):
+
+        self.clear_content()
+
+        page = ctk.CTkScrollableFrame(
+            self.content_frame,
+            fg_color="transparent"
+        )
+        page.pack(fill="both", expand=True)
+
+        SettingsPage(page)
         
     # ======================================
     # CARD CREATOR
