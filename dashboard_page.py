@@ -90,10 +90,13 @@ class DashboardPage:
             months.append(row["month"])
             totals.append(float(row["total_sales"]))
         
-        ax.bar(months, totals)
-        ax.set_title("Monthly Sales")
+        ax.bar(months, totals, width=0.5)
+        ax.set_title("Monthly Sales Analytics", fontsize= 14, fontwight = "bold")
         ax.set_xlabel("Month")
         ax.set_ylabel("Sales (₹)")
+        ax.grid(axis="y", linestyle="--", alpha=0.5)
+        
+        figure.tight_layout()
         
         canvas = FigureCanvasTkAgg(
             figure,
