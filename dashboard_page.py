@@ -3,6 +3,26 @@ from tkinter import ttk
 from database.dashboard_db import DashboardDB
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+from matplotlib.ticker import FuncFormatter
+
+# ==========================
+# UI CONSTANTS
+# ==========================
+
+CARD_COLOR = "white"
+CARD_RADIUS = 12
+
+TITLE_FONT = ("Segoe UI", 15)
+VALUE_FONT = ("Segoe UI", 24, "bold")
+SECTION_FONT = ("Segoe UI", 20, "bold")
+
+TEXT_PRIMARY = "#111827"
+TEXT_SECONDARY = "#6B7280"
+
+ACCENT_BLUE = "#2563EB"
+
+def indian_currency(x, pos):
+    return f"₹{x:,.0f}"
 
 class DashboardPage:
 
@@ -56,7 +76,7 @@ class DashboardPage:
         graph_frame = ctk.CTkFrame(
             parent,
             height=220,
-            fg_color="white",
+            fg_color=CARD_COLOR,
             corner_radius=15
         )
 
@@ -69,14 +89,14 @@ class DashboardPage:
 
         graph_title = ctk.CTkLabel(
             graph_frame,
-            text="Sales Analytics",
+            text="Monthly Sales Overview",
             font=("Segoe UI", 20, "bold")
         )
 
         graph_title.pack(pady=20)
         
         figure = Figure(
-           figsize=(8, 3),
+           figsize=(10, 5),
            dpi=100
         )
 
@@ -90,13 +110,49 @@ class DashboardPage:
             months.append(row["month"])
             totals.append(float(row["total_sales"]))
         
-        ax.bar(months, totals, width=0.5)
-        ax.set_title("Monthly Sales Analytics", fontsize= 14, fontwight = "bold")
-        ax.set_xlabel("Month")
-        ax.set_ylabel("Sales (₹)")
-        ax.grid(axis="y", linestyle="--", alpha=0.5)
+        ax.bar(months, totals, width=0.5, color="#2563EB")
+        bars = ax.bar(
+            months,
+            totals,
+            width=0.5,
+            color="#2563EB"
+        )
         
-        figure.tight_layout()
+        for bar in bars:
+
+            height = bar.get_height()
+
+            ax.annotate(
+                f"₹{height:,.0f}",
+                xy=(bar.get_x() + bar.get_width() / 2, height),
+                xytext=(0, 5),
+                textcoords="offset points",
+                ha="center",
+                fontsize=9,
+                fontweight="bold"
+            )
+            
+        ax.set_ylabel("Sales (₹)")
+        ax.yaxis.set_major_formatter(
+            FuncFormatter(indian_currency)
+        )
+        
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        
+        ax.grid(
+           axis="y",
+           linestyle="--",
+           linewidth=0.6,
+           alpha=0.3
+        )
+        
+        figure.subplots_adjust(
+           left=0.08,
+           right=0.98,
+           top=0.94,
+           bottom=0.18
+        )
         
         canvas = FigureCanvasTkAgg(
             figure,
@@ -196,7 +252,7 @@ class DashboardPage:
             width=width,
             height=140,
             fg_color="white",
-            corner_radius=15,
+            corner_radius=CARD_RADIUS,
             border_width=1,
             border_color="#E5E7EB"
         )
@@ -205,7 +261,7 @@ class DashboardPage:
             card,
             width=6,
             height=140,
-            fg_color="#2563EB",
+            fg_color=ACCENT_BLUE,
             corner_radius=0
         )
         accent.place(x=0, y=0)
@@ -222,7 +278,7 @@ class DashboardPage:
             card,
             text=title,
             font=("Segoe UI", 15),
-            text_color="#6B7280"
+            text_color=TEXT_SECONDARY
         )
 
         title_label.pack(
@@ -234,8 +290,8 @@ class DashboardPage:
         value_label = ctk.CTkLabel(
             card,
             text=value,
-            font=("Segoe UI", 24, "bold"),
-            text_color="#111827"
+            font=VALUE_FONT,
+            text_color=TEXT_PRIMARY
         )
 
         value_label.pack(
