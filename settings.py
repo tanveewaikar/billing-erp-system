@@ -1,6 +1,9 @@
 import customtkinter as ctk
+from tkinter import messagebox, filedialog
+import shutil
+import os
 from database.settings_db import SettingsDB
-from tkinter import messagebox
+
 
 class SettingsPage:
 
@@ -72,6 +75,14 @@ class SettingsPage:
         )
         self.footer_entry.pack(pady=8)
         
+        self.logo_btn = ctk.CTkButton(
+            self.form,
+            text="Choose Company Logo",
+            width=220,
+            command=self.choose_logo
+        )
+        self.logo_btn.pack(pady=10)
+        
         self.save_btn = ctk.CTkButton(
             self.form,
             text="Save Settings",
@@ -138,3 +149,33 @@ class SettingsPage:
             "Settings updated successfully."
         )
         
+    def choose_logo(self):
+
+        file_path = filedialog.askopenfilename(
+            title="Select Company Logo",
+            filetypes=[
+                 ("Image Files", "*.png *.jpg *.jpeg")
+            ]
+        )
+
+        if not file_path:
+             return
+
+        os.makedirs("assets/logos", exist_ok=True)
+
+        filename = os.path.basename(file_path)
+
+        destination = os.path.join(
+            "assets",
+            "logos",
+            filename
+        )
+
+        shutil.copy(file_path, destination)
+
+        self.logo_path = destination
+    
+        messagebox.showinfo(
+            "Success",
+            "Company logo selected successfully."
+        )
