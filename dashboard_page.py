@@ -1,6 +1,8 @@
 import customtkinter as ctk
 from tkinter import ttk
 from database.dashboard_db import DashboardDB
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 
 class DashboardPage:
 
@@ -74,14 +76,27 @@ class DashboardPage:
         )
 
         graph_title.pack(pady=20)
-
-        graph_placeholder = ctk.CTkLabel(
-            graph_frame,
-            text="Sales Graph Here",
-            font=("Segoe UI", 18)
+        
+        figure = Figure(
+           figsize=(8, 3),
+           dpi=100
         )
 
-        graph_placeholder.pack(pady=80)
+        ax = figure.add_subplot(111)
+
+        canvas = FigureCanvasTkAgg(
+            figure,
+            master=graph_frame
+        )
+
+        canvas.draw()
+
+        canvas.get_tk_widget().pack(
+            fill="both",
+            expand=True,
+            padx=20,
+            pady=(0, 20)
+        )
 
         # ==========================
         # TABLE
