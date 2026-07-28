@@ -193,8 +193,19 @@ class DashboardPage:
             width=width,
             height=140,
             fg_color="white",
-            corner_radius=15
+            corner_radius=15,
+            border_width=1,
+            border_color="#E5E7EB"
         )
+        
+        accent = ctk.CTkFrame(
+            card,
+            width=6,
+            height=140,
+            fg_color="#2563EB",
+            corner_radius=0
+        )
+        accent.place(x=0, y=0)
 
         card.pack(
             side="left",
@@ -207,20 +218,28 @@ class DashboardPage:
         title_label = ctk.CTkLabel(
             card,
             text=title,
-            font=("Segoe UI", 16)
+            font=("Segoe UI", 15),
+            text_color="#6B7280"
         )
 
         title_label.pack(
+            anchor="w",
+            padx = 20,
             pady=(25, 10)
         )
 
         value_label = ctk.CTkLabel(
             card,
             text=value,
-            font=("Segoe UI", 24, "bold")
+            font=("Segoe UI", 24, "bold"),
+            text_color="#111827"
         )
 
-        value_label.pack(expand=True)
+        value_label.pack(
+            # expand=True,
+            anchor="w",
+            padx = 20,
+        )
         
     def load_recent_invoices(self):
 
