@@ -12,8 +12,6 @@ class DashboardPage:
         # CARDS
         # ==========================
 
-        
-
         cards_frame = ctk.CTkFrame(
             parent,
             fg_color="transparent"
@@ -83,7 +81,20 @@ class DashboardPage:
         )
 
         ax = figure.add_subplot(111)
+        sales_data = DashboardDB.get_monthly_sales()
 
+        months = []
+        totals = []
+
+        for row in sales_data:
+            months.append(row["month"])
+            totals.append(float(row["total_sales"]))
+        
+        ax.bar(months, totals)
+        ax.set_title("Monthly Sales")
+        ax.set_xlabel("Month")
+        ax.set_ylabel("Sales (₹)")
+        
         canvas = FigureCanvasTkAgg(
             figure,
             master=graph_frame
