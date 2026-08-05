@@ -18,7 +18,6 @@ class SettingsDB:
 
         return settings
 
-
     @staticmethod
     def update_settings(
         company_name,
@@ -27,6 +26,7 @@ class SettingsDB:
         email,
         address,
         gst_number,
+        logo_path,
         invoice_prefix
     ):
 
@@ -36,14 +36,15 @@ class SettingsDB:
         query = """
         UPDATE company_settings
         SET
-            company_name=%s,
-            owner_name=%s,
-            phone=%s,
-            email=%s,
-            address=%s,
-            gst_number=%s,
-            invoice_prefix=%s
-        WHERE company_id=1
+            company_name = %s,
+            owner_name = %s,
+            phone = %s,
+            email = %s,
+            address = %s,
+            gst_number = %s,
+            logo_path = %s,
+            invoice_prefix = %s
+        WHERE company_id = 1
         """
 
         cursor.execute(
@@ -55,6 +56,7 @@ class SettingsDB:
                 email,
                 address,
                 gst_number,
+                logo_path,
                 invoice_prefix
             )
         )
