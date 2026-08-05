@@ -178,4 +178,4 @@ class SettingsPage:
         messagebox.showinfo(
             "Success",
             "Company logo selected successfully."
-        )
+        ) 
