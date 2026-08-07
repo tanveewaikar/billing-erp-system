@@ -70,13 +70,6 @@ class SettingsPage:
             width=450
         )
         self.prefix_entry.pack(pady=8)
-
-        self.footer_entry = ctk.CTkTextbox(
-            self.form,
-            width=450,
-            height=60
-        )
-        self.footer_entry.pack(pady=8)
         
         self.logo_btn = ctk.CTkButton(
             self.form,
@@ -124,10 +117,6 @@ class SettingsPage:
             settings["invoice_prefix"]
         )
 
-        self.footer_entry.insert(
-            "1.0",
-            settings["invoice_footer"] or ""
-        )
         self.load_logo()
         
     def save_settings(self):

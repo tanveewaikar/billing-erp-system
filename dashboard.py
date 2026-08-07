@@ -165,10 +165,16 @@ class Dashboard:
 
         for widget in self.content_frame.winfo_children():
             widget.destroy()
+            
+    def set_page_title(self, title):
 
+        self.title.configure(text=title)
+    
     def show_dashboard(self):
 
         self.clear_content()
+        
+        self.set_page_title("Dashboard")
 
         page = ctk.CTkScrollableFrame(
             self.content_frame,
