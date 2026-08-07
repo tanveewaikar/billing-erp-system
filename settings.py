@@ -181,6 +181,7 @@ class SettingsPage:
         shutil.copy(file_path, destination)
 
         self.logo_path = destination
+        self.load_logo()
     
         messagebox.showinfo(
             "Success",
@@ -202,7 +203,7 @@ class SettingsPage:
         logo = ctk.CTkImage(
             light_image=image,
             dark_image=image,
-            size=(120, 120)
+            size=(200, 200)
         )
 
         self.logo_label.configure(
