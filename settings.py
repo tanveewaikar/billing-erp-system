@@ -98,6 +98,8 @@ class SettingsPage:
 
         if not settings:
            return
+        
+        self.logo_path = settings["logo_path"]
 
         self.company_entry.insert(0, settings["company_name"])
         self.owner_entry.insert(0, settings["owner_name"])
@@ -141,6 +143,7 @@ class SettingsPage:
             email,
             address,
             gst_number,
+            self.logo_path,
             invoice_prefix
         )
 
