@@ -21,35 +21,65 @@ class SettingsPage:
 
         self.form = ctk.CTkFrame(parent)
         self.form.pack(fill="x", padx=20, pady=20)
-
+        
+        ctk.CTkLabel(
+            self.form,
+            text="Company Name ",
+            font=("Segoe UI", 14, "bold")
+        ).pack(anchor="w", padx=20)
+        
         self.company_entry = ctk.CTkEntry(
            self.form,
            placeholder_text="Company Name",
            width=450
         )
         self.company_entry.pack(pady=8)
-
+        
+        ctk.CTkLabel(
+            self.form,
+            text="Owner Name ",
+            font=("Segoe UI", 14, "bold")
+        ).pack(anchor="w", padx=20)
+        
         self.owner_entry = ctk.CTkEntry(
             self.form,
             placeholder_text="Owner Name",
             width=450
         )
         self.owner_entry.pack(pady=8)
-
+        
+        ctk.CTkLabel(
+            self.form,
+            text="Phone Number ",
+            font=("Segoe UI", 14, "bold")
+        ).pack(anchor="w", padx=20)
+        
         self.phone_entry = ctk.CTkEntry(
             self.form,
             placeholder_text="Phone Number",
             width=450
         )
         self.phone_entry.pack(pady=8)
-
+        
+        ctk.CTkLabel(
+            self.form,
+            text="Business Email ",
+            font=("Segoe UI", 14, "bold")
+        ).pack(anchor="w", padx=20)
+        
         self.email_entry = ctk.CTkEntry(
             self.form,
             placeholder_text="Business Email",
             width=450
         )
         self.email_entry.pack(pady=8)
-
+  
+        ctk.CTkLabel(
+            self.form,
+            text="Address",
+            font=("Segoe UI", 14, "bold")
+        ).pack(anchor="w", padx=20)
+        
         self.address_entry = ctk.CTkTextbox(
             self.form,
             width=450,
@@ -57,13 +87,24 @@ class SettingsPage:
         )
         self.address_entry.pack(pady=8)
 
+        ctk.CTkLabel(
+            self.form,
+            text="GST Number ",
+            font=("Segoe UI", 14, "bold")
+        ).pack(anchor="w", padx=20)
+        
         self.gst_entry = ctk.CTkEntry(
             self.form,
             placeholder_text="GST Number",
             width=450
         )
         self.gst_entry.pack(pady=8)
-
+        
+        ctk.CTkLabel(
+            self.form,
+            text="Invoice Prefix",
+            font=("Segoe UI", 14, "bold")
+        ).pack(anchor="w", padx=20)
         self.prefix_entry = ctk.CTkEntry(
             self.form,
             placeholder_text="Invoice Prefix (Example: INV)",
