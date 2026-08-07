@@ -1,7 +1,9 @@
 import customtkinter as ctk
 from tkinter import messagebox, filedialog
+from PIL import Image
 import shutil
 import os
+
 from database.settings_db import SettingsDB
 
 
@@ -184,3 +186,30 @@ class SettingsPage:
             "Success",
             "Company logo selected successfully."
         ) 
+        
+    def load_logo(self):
+
+        if not self.logo_path:
+           self.logo_label.configure(text="No Logo Selected")
+           return
+
+        if not os.path.exists(self.logo_path):
+           self.logo_label.configure(text="Logo Not Found")
+           return
+
+        image = Image.open(self.logo_path)
+
+        logo = ctk.CTkImage(
+            light_image=image,
+            dark_image=image,
+            size=(120, 120)
+        )
+
+        self.logo_label.configure(
+           image=logo,
+           text=""
+        )
+
+        self.logo_label.image = logo
+        
+    
