@@ -187,6 +187,8 @@ class Dashboard:
     def show_customers(self):
 
         self.clear_content()
+        
+        self.set_page_title("Customers")
 
         page = ctk.CTkScrollableFrame(
             self.content_frame,
@@ -199,6 +201,8 @@ class Dashboard:
     def show_products(self):
 
         self.clear_content()
+        
+        self.set_page_title("Products")
 
         page = ctk.CTkScrollableFrame(
             self.content_frame,
@@ -211,7 +215,9 @@ class Dashboard:
     def show_suppliers(self):
 
         self.clear_content()
-
+        
+        self.set_page_title("Suppliers")
+        
         page = ctk.CTkScrollableFrame(
             self.content_frame,
             fg_color="transparent"
@@ -223,6 +229,8 @@ class Dashboard:
     def show_purchases(self):
 
         self.clear_content()
+        
+        self.set_page_title("Purchases")
 
         page = ctk.CTkScrollableFrame(
            self.content_frame,
@@ -235,6 +243,8 @@ class Dashboard:
     def show_billing(self):
 
         self.clear_content()
+        
+        self.set_page_title("Billing")
 
         page = ctk.CTkScrollableFrame(
             self.content_frame,
@@ -247,6 +257,8 @@ class Dashboard:
     def show_reports(self):
 
         self.clear_content()
+        
+        self.set_page_title("Reports")
 
         page = ctk.CTkScrollableFrame(
             self.content_frame,
@@ -260,7 +272,9 @@ class Dashboard:
     def show_settings(self):
 
         self.clear_content()
-
+        
+        self.set_page_title("Settings")
+        
         page = ctk.CTkScrollableFrame(
             self.content_frame,
             fg_color="transparent"
