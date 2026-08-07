@@ -9,12 +9,13 @@ class SettingsPage:
 
     def __init__(self, parent):
 
-        title = ctk.CTkLabel(
+        self.logo_label= ctk.CTkLabel(
             parent,
-            text="Settings",
-            font=("Segoe UI", 26, "bold")
+            text="No Logo Selected",
+            width = 150,
+            height = 150
         )
-        title.pack(pady=20)
+        self.logo_label.pack(pady=(0,20))
 
         self.form = ctk.CTkFrame(parent)
         self.form.pack(fill="x", padx=20, pady=20)
@@ -125,6 +126,7 @@ class SettingsPage:
             "1.0",
             settings["invoice_footer"] or ""
         )
+        self.load_logo()
         
     def save_settings(self):
 
