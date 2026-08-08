@@ -1,5 +1,6 @@
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from database.settings_db import SettingsDB
 import os
 
 
@@ -37,15 +38,75 @@ def generate_pdf(
     c = canvas.Canvas(pdf_path, pagesize=letter)
 
     width, height = letter
+    
+    settings = SettingsDB.get_settings()
 
     y = height - 50
 
-    # Title
+   # Company Name
+    c.setFont("Helvetica-Bold", 20)
+    c.drawString(
+      50,
+      y,
+      settings["company_name"]
+    )
+
+    # Invoice Title
     c.setFont("Helvetica-Bold", 18)
-    c.drawString(250, y, "INVOICE")
+    c.drawString(
+       430,
+       y,
+       "INVOICE"
+    )
 
-    y -= 40
+    y -= 30
 
+    c.setFont("Helvetica", 11)
+
+    c.drawString(
+       50,
+       y,
+       f"Owner : {settings['owner_name']}"
+    )
+
+    y -= 18
+
+    c.drawString(
+       50,
+       y,
+       f"Phone : {settings['phone']}" 
+    )
+
+    y -= 18
+
+    c.drawString(
+       50,
+       y,
+       f"Email : {settings['email']}"
+    )
+
+    y -= 18
+
+    c.drawString(
+       50,
+       y,
+       f"GST : {settings['gst_number']}"
+    )
+
+    y -= 18
+
+    address_lines = settings["address"].splitlines()
+    for line in address_lines:
+
+        c.drawString(
+           50,
+           y,
+           line
+        )
+
+        y -= 15
+    y -= 10
+    
     c.setFont("Helvetica", 12)
 
     c.drawString(
