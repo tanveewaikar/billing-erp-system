@@ -333,10 +333,24 @@ def generate_pdf(
     y -= 40
     c.setFont("Helvetica", 12)
     
-    c.drawString(
-        50,
-        y,
-        "Thank You For Your Purchase!"
+    # Invoice Footer
+
+    c.line(
+       50,
+       y + 15,
+       550,
+       y + 15
+    )
+
+    c.setFont(
+       "Helvetica-Bold",
+       11
+    )
+
+    c.drawCentredString(
+       width / 2,
+       y,
+       "Thank You For Your Purchase!"
     )
 
     # Save PDF
