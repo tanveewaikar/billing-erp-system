@@ -84,6 +84,62 @@ class BillingPage:
         self.total_label = ctk.CTkLabel(summary,text="Grand Total : ₹0.00",font=("Segoe UI", 18, "bold"))
         self.total_label.pack(anchor="e", padx=20, pady=10)
         
+        # ==============================
+        # PAYMENT SECTION
+        # ==============================
+
+        payment_frame = ctk.CTkFrame(parent)
+        payment_frame.pack(fill="x", padx=20, pady=10)
+
+        payment_title = ctk.CTkLabel(
+           payment_frame,
+           text="Payment Details",
+           font=("Segoe UI", 18, "bold")
+        )
+        payment_title.pack(anchor="w", padx=15, pady=(10, 5))
+
+
+        self.payment_method = ctk.CTkComboBox(
+            payment_frame,
+            values=[
+               "Cash",
+               "Card",
+               "UPI",
+               "Bank Transfer"
+            ],
+            width=200
+        )
+        self.payment_method.set("Cash")
+        self.payment_method.pack(
+            side="left",
+            padx=10,
+            pady=10
+        )
+
+
+        self.amount_paid = ctk.CTkEntry(
+            payment_frame,
+            width=150,
+            placeholder_text="Amount Paid"
+        )
+        self.amount_paid.pack(
+            side="left",
+            padx=10,
+            pady=10
+        )
+
+
+        self.transaction_id = ctk.CTkEntry(
+            payment_frame,
+            width=200,
+            placeholder_text="Transaction ID (Optional)"
+        )
+        self.transaction_id.pack(
+           side="left",
+           padx=10,
+           pady=10
+        )
+
         btn_frame = ctk.CTkFrame(parent)
         btn_frame.pack(fill="x", padx=20, pady=20)
 

@@ -39,3 +39,42 @@ class PaymentDB:
 
         cursor.close()
         conn.close()
+        
+    @staticmethod
+    def get_total_paid(invoice_id):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        query = """
+        SELECT COALESCE(SUM(amount_paid), 0)
+        FROM payments
+        WHERE invoice_id = %s
+        """
+
+        cursor.execute(
+           query,
+           (invoice_id,)
+        )
+
+        total_paid = cursor.fetchone()[0]
+
+        cursor.close()
+        conn.close()
+
+        return float(total_paid)
+    
+    @staticmethod
+    def get_payment_status(invoice_id, invoice_total):
+
+        total_paid = PaymentDB.get_total_paid(invoice_id)
+
+        if total_paid <= 0:
+           return "UNPAID"
+
+        if total_paid >= float(invoice_total):
+            return "PAID"
+
+        return "PARTIALLY PAID"
+    
+    
