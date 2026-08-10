@@ -7,6 +7,7 @@ from database.invoice_db import InvoiceDB
 from utils.pdf_generator import generate_pdf
 from database.settings_db import SettingsDB
 from database.stock_log_db import StockLogDB
+from database.payment_db import PaymentDB
 
 
 class BillingPage:
@@ -139,7 +140,20 @@ class BillingPage:
            padx=10,
            pady=10
         )
+        
+        self.save_payment_btn = ctk.CTkButton(
+            payment_frame,
+            text="Save Payment",
+            width=150,
+            command=self.save_payment
+        )
 
+        self.save_payment_btn.pack(
+            side="left",
+            padx=10,
+            pady=10
+        )
+        
         btn_frame = ctk.CTkFrame(parent)
         btn_frame.pack(fill="x", padx=20, pady=20)
 
@@ -380,7 +394,18 @@ class BillingPage:
             "Success",
             f"Invoice {invoice_number} generated successfully"
         )
+    
+    def save_payment(self):
 
+        if not self.bill_items:
+            messagebox.showerror(
+                "Error",
+                "Please generate an invoice first."
+            )
+            return
+
+        print("Save Payment clicked")
+    
     def remove_product(self):
 
         selected = self.tree.focus()
