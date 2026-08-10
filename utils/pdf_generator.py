@@ -322,7 +322,8 @@ def generate_pdf(
     )
 
     y -= 20
-
+    
+    c.setFont("Helvetica-Bold", 14)
     c.drawString(
         350,
         y,
@@ -330,7 +331,8 @@ def generate_pdf(
     )
 
     y -= 40
-
+    c.setFont("Helvetica", 12)
+    
     c.drawString(
         50,
         y,
