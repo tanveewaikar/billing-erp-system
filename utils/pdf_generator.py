@@ -199,8 +199,15 @@ def generate_pdf(
        y - 95,
        f"Address : {customer_address}"
     )
+    
+    c.drawString(
+       350,
+       y - 115,
+       f"GST : {customer_details['gst_number'] or 'N/A'}"
+    )
 
-    y -= 125
+
+    y -= 145
 
     # Table Header
     c.line(50, y, 550, y)
