@@ -19,6 +19,8 @@ class BillingPage:
         self.subtotal_amount = 0
         self.gst_amount = 0
         self.grand_total = 0
+        
+        self.current_invoice_id = None
 
         title = ctk.CTkLabel(
             parent,
@@ -330,7 +332,8 @@ class BillingPage:
            customer_id,
            self.subtotal_amount,
            self.grand_total
-       )
+        )
+        self.current_invoice_id = invoice_id
        
         for product_name, data in self.bill_items.items():
 
@@ -397,31 +400,43 @@ class BillingPage:
     
     def save_payment(self):
 
-        if not self.bill_items:
-            messagebox.showerror(
-                "Error",
-                "Please generate an invoice first."
-            )
-            return
-
-        print("Save Payment clicked")
-    
-    def remove_product(self):
-
-        selected = self.tree.focus()
-
-        if not selected:
+        if self.current_invoice_id is None:
             messagebox.showerror(
                "Error",
-               "Please select a product"
+               "Please generate an invoice first."
             )
             return
 
-        values = self.tree.item(selected, "values")
+        amount_text = self.amount_paid.get().strip()
 
-        product_name = values[0]
+        if not amount_text:
+            messagebox.showerror(
+                "Payment Error",
+                "Please enter the amount paid."
+            )
+            return
 
-        if product_name in self.bill_items:
-            del self.bill_items[product_name]
- 
-        self.refresh_bill_table()
+        try:
+            amount_paid = float(amount_text)
+        except ValueError:
+            messagebox.showerror(
+                "Payment Error",
+                "Please enter a valid amount."
+            )
+            return
+
+        if amount_paid <= 0:
+            messagebox.showerror(
+                "Payment Error",
+                "Amount paid must be greater than zero."
+            )
+            return
+
+        if amount_paid > self.grand_total:
+            messagebox.showerror(
+               "Payment Error",
+               "Amount paid cannot be greater than the invoice total."
+            )
+            return
+
+        print("Valid payment amount:", amount_paid)
