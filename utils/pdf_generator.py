@@ -225,12 +225,17 @@ def generate_pdf(
             item_subtotal * gst_percent / 100
         )
 
+        display_name = product_name
+
+        if len(display_name) > 32:
+           display_name = display_name[:29] + "..."
+
         c.drawString(
             50,
             y,
-            product_name
+            display_name
         )
-
+        
         c.drawString(
             280,
             y,
