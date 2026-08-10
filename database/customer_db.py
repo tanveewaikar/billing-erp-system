@@ -159,28 +159,32 @@ class CustomerDB:
     @staticmethod
     def get_customer_by_name(customer_name):
 
-       conn = get_connection()
-       cursor = conn.cursor()
+        conn = get_connection()
+        cursor = conn.cursor()
 
-       cursor.execute(
-       """
-          SELECT customer_id, customer_name
-          FROM customers
-          WHERE customer_name=%s
-          """,
-          (customer_name,)
+        cursor.execute(
+            """
+            SELECT
+               customer_id,
+               customer_name,
+               phone,
+               email,
+               address,
+               city,
+               state,
+               pincode,
+               gst_number
+            FROM customers
+            WHERE customer_name=%s
+            """,
+            (customer_name,)
         )
 
-       customer = cursor.fetchone()
+        customer = cursor.fetchone()
 
-       cursor.close()
-       conn.close()
+        cursor.close()
+        conn.close()
 
-       return customer
-     
-    def close_connection(self):
-
-        self.cursor.close()
-        self.connection.close()
-        
+        return customer
+    
     
