@@ -181,8 +181,26 @@ def generate_pdf(
        y - 75,
        f"Email : {customer_details['email']}"
     )
+    
+    customer_address = ", ".join(
+        filter(
+            None,
+            [
+               customer_details["address"],
+               customer_details["city"],
+               customer_details["state"],
+               customer_details["pincode"]
+            ]
+        )
+    )
 
-    y -= 105
+    c.drawString(
+       350,
+       y - 95,
+       f"Address : {customer_address}"
+    )
+
+    y -= 125
 
     # Table Header
     c.line(50, y, 550, y)
