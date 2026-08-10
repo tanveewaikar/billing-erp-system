@@ -244,6 +244,16 @@ class BillingPage:
            return
 
         customer_id = customer[0]
+        customer_details = {
+            "name": customer[1],
+            "phone": customer[2],
+            "email": customer[3],
+            "address": customer[4],
+            "city": customer[5],
+            "state": customer[6],
+            "pincode": customer[7],
+            "gst_number": customer[8]
+        }
 
         invoice_id = InvoiceDB.create_invoice(
            invoice_number,
@@ -299,6 +309,7 @@ class BillingPage:
         generate_pdf(
             invoice_number,
             customer_name,
+            customer_details,
             self.bill_items,
             self.subtotal_amount,
             self.gst_amount,

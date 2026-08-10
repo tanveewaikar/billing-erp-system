@@ -9,6 +9,7 @@ import os
 def generate_pdf(
     invoice_number,
     customer_name,
+    customer_details,
     bill_items,
     subtotal,
     gst,
@@ -164,12 +165,24 @@ def generate_pdf(
     )
 
     c.drawString(
-        350,
-        y - 35,
-        f"Customer : {customer_name}"
+       350,
+       y - 35,
+       f"Customer : {customer_details['name']}"
     )
 
-    y -= 70
+    c.drawString(
+       350,
+       y - 55,
+       f"Phone : {customer_details['phone']}"
+    )
+
+    c.drawString(
+       350,
+       y - 75,
+       f"Email : {customer_details['email']}"
+    )
+
+    y -= 105
 
     # Table Header
     c.line(50, y, 550, y)
