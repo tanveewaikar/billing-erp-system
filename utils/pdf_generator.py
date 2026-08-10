@@ -183,25 +183,25 @@ def generate_pdf(
     )
 
     c.drawString(
-       250,
+       280,
        y,
        "Qty"
     )
 
     c.drawString(
-       320,
+       340,
        y,
        "Price"
     )
     
     c.drawString(
-       390,
+       420,
        y,
        "GST"
     )
     
     c.drawString(
-       480,
+       485,
        y,
        "Total"
     )
@@ -232,25 +232,25 @@ def generate_pdf(
         )
 
         c.drawString(
-            250,
+            280,
             y,
             str(qty)
         )
 
         c.drawString(
-            320,
+            340,
             y,
             f"Rs.{price:.2f}"
         )
         
         c.drawString(
-            390,
+            420,
             y,
             f"{gst_percent:.0f}%"
         )
         
         c.drawString(
-            480,
+            485,
             y,
             f"Rs.{item_total:.2f}"
         )
