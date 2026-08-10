@@ -5,6 +5,7 @@ from database.product_db import ProductDB
 from tkinter import ttk, messagebox
 from database.invoice_db import InvoiceDB
 from utils.pdf_generator import generate_pdf
+from database.settings_db import SettingsDB
 from database.stock_log_db import StockLogDB
 
 
@@ -215,9 +216,17 @@ class BillingPage:
 
         from datetime import datetime
 
+        settings = SettingsDB.get_settings()
+
+        invoice_prefix = "INV"
+
+        if settings and settings["invoice_prefix"]:
+            invoice_prefix = settings["invoice_prefix"]
+
         invoice_number = (
-           "INV-" +
-           datetime.now().strftime("%Y%m%d%H%M%S")
+            invoice_prefix +
+            "-" +
+            datetime.now().strftime("%Y%m%d%H%M%S")
         )
 
         print(invoice_number)

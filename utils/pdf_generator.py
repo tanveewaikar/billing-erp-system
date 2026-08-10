@@ -1,5 +1,7 @@
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
+from datetime import datetime
 from database.settings_db import SettingsDB
 import os
 
@@ -43,28 +45,62 @@ def generate_pdf(
 
     y = height - 50
 
-   # Company Name
+    # Company Logo
+    logo_path = settings["logo_path"]
+
+    if logo_path:
+
+        project_root = os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__))
+        )
+
+        full_logo_path = os.path.join(
+           project_root,
+           logo_path
+        )
+
+        if os.path.exists(full_logo_path):
+
+            logo = ImageReader(full_logo_path)
+
+            c.drawImage(
+               logo,
+               50,
+               y - 65,
+               width=60,
+               height=60,
+               preserveAspectRatio=True,
+               mask="auto"
+            )
+
+
+    # Company Name
     c.setFont("Helvetica-Bold", 20)
+
     c.drawString(
-      50,
-      y,
-      settings["company_name"]
+        130,
+        y,
+        settings["company_name"]
     )
+
 
     # Invoice Title
     c.setFont("Helvetica-Bold", 18)
+
     c.drawString(
-       430,
-       y,
-       "INVOICE"
+        430,
+        y,
+        "INVOICE"
     )
 
     y -= 30
 
+
+    # Company Details
     c.setFont("Helvetica", 11)
 
     c.drawString(
-       50,
+       130,
        y,
        f"Owner : {settings['owner_name']}"
     )
@@ -72,15 +108,15 @@ def generate_pdf(
     y -= 18
 
     c.drawString(
-       50,
+       130,
        y,
-       f"Phone : {settings['phone']}" 
+       f"Phone : {settings['phone']}"
     )
 
     y -= 18
 
     c.drawString(
-       50,
+       130,
        y,
        f"Email : {settings['email']}"
     )
@@ -88,52 +124,87 @@ def generate_pdf(
     y -= 18
 
     c.drawString(
-       50,
+       130,
        y,
        f"GST : {settings['gst_number']}"
     )
 
     y -= 18
 
+    # Address
     address_lines = settings["address"].splitlines()
+
     for line in address_lines:
 
         c.drawString(
-           50,
-           y,
-           line
+            130,
+            y,
+            line
         )
 
         y -= 15
+
     y -= 10
     
-    c.setFont("Helvetica", 12)
+    # Invoice Details
+    invoice_date = datetime.now().strftime("%d-%m-%Y")
+
+    c.setFont("Helvetica", 11)
 
     c.drawString(
-        50,
-        y,
+        350,
+        y + 5,
         f"Invoice No : {invoice_number}"
     )
 
-    y -= 20
+    c.drawString(
+        350,
+        y - 15,
+        f"Invoice Date : {invoice_date}"
+    )
 
     c.drawString(
-        50,
-        y,
+        350,
+        y - 35,
         f"Customer : {customer_name}"
     )
 
-    y -= 30
+    y -= 70
 
+    # Table Header
     c.line(50, y, 550, y)
 
     y -= 25
 
-    # Table Header
-    c.drawString(50, y, "Product")
-    c.drawString(250, y, "Qty")
-    c.drawString(320, y, "Price")
-    c.drawString(420, y, "Total")
+    c.drawString(
+       50,
+       y,
+       "Product"
+    )
+
+    c.drawString(
+       250,
+       y,
+       "Qty"
+    )
+
+    c.drawString(
+       320,
+       y,
+       "Price"
+    )
+    
+    c.drawString(
+       390,
+       y,
+       "GST"
+    )
+    
+    c.drawString(
+       480,
+       y,
+       "Total"
+    )
 
     y -= 15
 
@@ -171,9 +242,15 @@ def generate_pdf(
             y,
             f"Rs.{price:.2f}"
         )
-
+        
         c.drawString(
-            420,
+            390,
+            y,
+            f"{gst_percent:.0f}%"
+        )
+        
+        c.drawString(
+            480,
             y,
             f"Rs.{item_total:.2f}"
         )
