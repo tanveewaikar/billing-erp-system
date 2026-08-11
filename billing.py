@@ -21,6 +21,7 @@ class BillingPage:
         self.grand_total = 0
         
         self.current_invoice_id = None
+        self.current_invoice_total = 0
 
         title = ctk.CTkLabel(
             parent,
@@ -86,6 +87,39 @@ class BillingPage:
 
         self.total_label = ctk.CTkLabel(summary,text="Grand Total : ₹0.00",font=("Segoe UI", 18, "bold"))
         self.total_label.pack(anchor="e", padx=20, pady=10)
+        
+        self.paid_label = ctk.CTkLabel(
+            summary,
+            text="Paid : ₹0.00"
+        )
+        self.paid_label.pack(
+            anchor="e",
+            padx=20,
+            pady=5
+        )
+
+        self.balance_label = ctk.CTkLabel(
+            summary,
+            text="Balance : ₹0.00"
+        )
+        self.balance_label.pack(
+            anchor="e",
+            padx=20,
+            pady=5
+        )
+
+
+        self.status_label = ctk.CTkLabel(
+            summary,
+            text="Status : UNPAID",
+            font=("Segoe UI", 16, "bold")
+        )
+        self.status_label.pack(
+            anchor="e",
+            padx=20,
+            pady=5
+        )
+        
         
         # ==============================
         # PAYMENT SECTION
@@ -334,6 +368,7 @@ class BillingPage:
            self.grand_total
         )
         self.current_invoice_id = invoice_id
+        self.current_invoice_total = self.grand_total
        
         for product_name, data in self.bill_items.items():
 
@@ -432,11 +467,56 @@ class BillingPage:
             )
             return
 
-        if amount_paid > self.grand_total:
+        total_paid = PaymentDB.get_total_paid(
+            self.current_invoice_id
+        )
+
+        remaining_amount = self.current_invoice_total - total_paid
+
+        if amount_paid > remaining_amount:
             messagebox.showerror(
-               "Payment Error",
-               "Amount paid cannot be greater than the invoice total."
+                "Payment Error",
+                f"Maximum payable amount is ₹{remaining_amount:.2f}."
             )
             return
 
-        print("Valid payment amount:", amount_paid)
+        transaction_id = self.transaction_id.get().strip()
+
+        payment_method = self.payment_method.get()
+
+        PaymentDB.add_payment(
+            self.current_invoice_id,
+            amount_paid,
+            payment_method,
+            transaction_id or None
+        )
+
+        messagebox.showinfo(
+            "Success",
+            "Payment saved successfully."
+        )
+
+        print("Payment saved:", amount_paid)
+        
+    def remove_product(self):
+
+        selected = self.tree.focus()
+
+        if not selected:
+            messagebox.showerror(
+                "Error",
+                "Please select a product"
+            )
+            return
+
+        values = self.tree.item(
+            selected,
+            "values"
+        )
+
+        product_name = values[0]
+
+        if product_name in self.bill_items:
+            del self.bill_items[product_name]
+
+        self.refresh_bill_table()
