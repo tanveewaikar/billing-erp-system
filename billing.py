@@ -490,13 +490,56 @@ class BillingPage:
             payment_method,
             transaction_id or None
         )
-
+        
+        self.update_payment_summary()
         messagebox.showinfo(
             "Success",
             "Payment saved successfully."
         )
 
         print("Payment saved:", amount_paid)
+        
+    def update_payment_summary(self):
+
+        if self.current_invoice_id is None:
+            self.paid_label.configure(
+                text="Paid : ₹0.00"
+            )
+
+            self.balance_label.configure(
+                text="Balance : ₹0.00"
+            )
+
+            self.status_label.configure(
+                text="Status : UNPAID"
+            )
+
+            return
+
+        total_paid = PaymentDB.get_total_paid(
+            self.current_invoice_id
+        )
+
+        balance = (
+            self.current_invoice_total - total_paid
+        )
+
+        status = PaymentDB.get_payment_status(
+            self.current_invoice_id,
+            self.current_invoice_total
+        )
+
+        self.paid_label.configure(
+            text=f"Paid : ₹{total_paid:.2f}"
+        )
+
+        self.balance_label.configure(
+            text=f"Balance : ₹{balance:.2f}"
+        )
+
+        self.status_label.configure(
+            text=f"Status : {status}"
+        )
         
     def remove_product(self):
 
