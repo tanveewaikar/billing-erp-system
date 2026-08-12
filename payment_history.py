@@ -60,6 +60,18 @@ class PaymentHistoryPage:
             padx=10,
             pady=10
         )
+        
+        clear_btn = ctk.CTkButton(
+            search_frame,
+            text="Clear",
+            command=self.clear_search
+        )
+
+        clear_btn.pack(
+            side="left",
+            padx=10,
+            pady=10
+        )
 
         columns = (
             "Payment ID",
@@ -152,3 +164,12 @@ class PaymentHistoryPage:
                     payment["transaction_id"] or "-"
                 )
             )
+            
+    def clear_search(self):
+
+        self.search_entry.delete(
+            0,
+            "end"
+        )
+
+        self.load_payments()
