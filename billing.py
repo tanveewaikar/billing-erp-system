@@ -502,15 +502,24 @@ class BillingPage:
             self.current_invoice_id
         )
 
-        remaining_amount = self.current_invoice_total - total_paid
+        remaining_amount = (
+           self.current_invoice_total - total_paid
+        )
 
-        if amount_paid > remaining_amount:
+        if remaining_amount <= 0:
             messagebox.showerror(
                 "Payment Error",
-                f"Maximum payable amount is ₹{remaining_amount:.2f}."
+                "This invoice is already fully paid."
             )
             return
 
+        if amount_paid > remaining_amount:
+            messagebox.showerror(
+               "Payment Error",
+               f"Maximum payable amount is ₹{remaining_amount:.2f}."
+            )
+            return
+        
         transaction_id = self.transaction_id.get().strip()
 
         payment_method = self.payment_method.get()
