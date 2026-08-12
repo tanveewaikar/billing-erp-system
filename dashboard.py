@@ -11,6 +11,7 @@ from suppliers import SuppliersPage
 from purchases import PurchasesPage
 from dashboard_page import DashboardPage
 from settings import SettingsPage
+from payment_history import PaymentHistoryPage
 
 class Dashboard:
 
@@ -80,6 +81,11 @@ class Dashboard:
         self.create_sidebar_button(
             "📊 Reports",
             self.show_reports
+        )
+        
+        self.create_sidebar_button(
+            "💰 Payment History",
+            self.show_payment_history
         )
         
         self.create_sidebar_button(
@@ -268,7 +274,24 @@ class Dashboard:
 
         ReportsPage(page)
         
-        
+    def show_payment_history(self):
+
+        self.clear_content()
+
+        self.set_page_title("Payment History")
+
+        page = ctk.CTkScrollableFrame(
+            self.content_frame,
+            fg_color="transparent"
+        )
+
+        page.pack(
+           fill="both",
+           expand=True
+        )
+
+        PaymentHistoryPage(page)
+    
     def show_settings(self):
 
         self.clear_content()

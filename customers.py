@@ -2,6 +2,7 @@ import customtkinter as ctk
 from tkinter import ttk, messagebox
 from database.customer_db import CustomerDB
 
+
 class CustomersPage:
 
     def __init__(self, parent):
