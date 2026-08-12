@@ -140,6 +140,17 @@ class PaymentHistoryPage:
             padx=20,
             pady=10
         )
+        
+        self.payment_count_label = ctk.CTkLabel(
+            summary_frame,
+            text="Transactions : 0"
+        )
+
+        self.payment_count_label.pack(
+            side="left",
+            padx=20,
+            pady=10
+        )
 
         self.cash_label = ctk.CTkLabel(
             summary_frame,
@@ -448,6 +459,7 @@ class PaymentHistoryPage:
         upi_amount = 0
         card_amount = 0
         bank_transfer_amount = 0
+        payment_count = len(payments)
 
         for payment in payments:
 
@@ -479,6 +491,10 @@ class PaymentHistoryPage:
 
         self.total_payment_label.configure(
             text=f"Total Payments : ₹{total_amount:.2f}"
+        )
+        
+        self.payment_count_label.configure(
+            text=f"Transactions : {payment_count}"
         )
 
         self.cash_label.configure(
