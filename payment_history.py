@@ -6,16 +6,11 @@ from database.payment_db import PaymentDB
 class PaymentHistoryPage:
 
     def __init__(self, parent):
-        
-        table_frame = ctk.CTkFrame(parent)
 
-        table_frame.pack(
-            fill="both",
-            expand=True,
-            padx=20,
-            pady=20
-        )
-        
+        # ==============================
+        # SEARCH SECTION
+        # ==============================
+
         search_frame = ctk.CTkFrame(parent)
 
         search_frame.pack(
@@ -35,7 +30,6 @@ class PaymentHistoryPage:
             padx=10,
             pady=10
         )
-
 
         search_btn = ctk.CTkButton(
             search_frame,
@@ -60,7 +54,7 @@ class PaymentHistoryPage:
             padx=10,
             pady=10
         )
-        
+
         clear_btn = ctk.CTkButton(
             search_frame,
             text="Clear",
@@ -72,7 +66,8 @@ class PaymentHistoryPage:
             padx=10,
             pady=10
         )
-        
+
+
         # ==============================
         # DATE FILTER
         # ==============================
@@ -82,7 +77,7 @@ class PaymentHistoryPage:
         date_frame.pack(
             fill="x",
             padx=20,
-            pady=(0, 10)
+            pady=(10, 0)
         )
 
         self.from_date_entry = ctk.CTkEntry(
@@ -121,6 +116,67 @@ class PaymentHistoryPage:
             pady=10
         )
 
+
+        # ==============================
+        # PAYMENT SUMMARY
+        # ==============================
+
+        summary_frame = ctk.CTkFrame(parent)
+
+        summary_frame.pack(
+            fill="x",
+            padx=20,
+            pady=10
+        )
+
+        self.total_payment_label = ctk.CTkLabel(
+            summary_frame,
+            text="Total Payments : ₹0.00",
+            font=("Segoe UI", 16, "bold")
+        )
+
+        self.total_payment_label.pack(
+            side="left",
+            padx=20,
+            pady=10
+        )
+
+        self.cash_label = ctk.CTkLabel(
+            summary_frame,
+            text="Cash : ₹0.00"
+        )
+
+        self.cash_label.pack(
+            side="left",
+            padx=20,
+            pady=10
+        )
+
+        self.upi_label = ctk.CTkLabel(
+            summary_frame,
+            text="UPI : ₹0.00"
+        )
+
+        self.upi_label.pack(
+            side="left",
+            padx=20,
+            pady=10
+        )
+
+
+        # ==============================
+        # PAYMENT TABLE
+        # ==============================
+
+        table_frame = ctk.CTkFrame(parent)
+
+        table_frame.pack(
+            fill="both",
+            expand=True,
+            padx=20,
+            pady=(0, 20)
+        )
+
         columns = (
             "Payment ID",
             "Invoice No",
@@ -130,13 +186,11 @@ class PaymentHistoryPage:
             "Transaction ID"
         )
 
-
         self.tree = ttk.Treeview(
             table_frame,
             columns=columns,
             show="headings"
         )
-
 
         for col in columns:
 
@@ -150,15 +204,22 @@ class PaymentHistoryPage:
                 width=160
             )
 
-
         self.tree.pack(
             fill="both",
             expand=True
         )
 
 
+        # ==============================
+        # LOAD DATA
+        # ==============================
+
         self.load_payments()
 
+
+    # ==========================================
+    # LOAD ALL PAYMENTS
+    # ==========================================
 
     def load_payments(self):
 
@@ -170,6 +231,11 @@ class PaymentHistoryPage:
         payments = PaymentDB.get_all_payments()
 
 
+        self.update_payment_summary(
+            payments
+        )
+
+
         for payment in payments:
 
             self.tree.insert(
@@ -184,19 +250,37 @@ class PaymentHistoryPage:
                     payment["transaction_id"] or "-"
                 )
             )
-            
+
+
+    # ==========================================
+    # SEARCH PAYMENTS
+    # ==========================================
+
     def search_payments(self):
 
         search_text = self.search_entry.get().strip()
 
         if not search_text:
+
             self.load_payments()
+
             return
 
-        payments = PaymentDB.search_payments(search_text)
+
+        payments = PaymentDB.search_payments(
+            search_text
+        )
+
+
+        self.update_payment_summary(
+            payments
+        )
+
 
         for item in self.tree.get_children():
+
             self.tree.delete(item)
+
 
         for payment in payments:
 
@@ -212,39 +296,55 @@ class PaymentHistoryPage:
                     payment["transaction_id"] or "-"
                 )
             )
-            
+
+
+    # ==========================================
+    # CLEAR SEARCH / FILTER
+    # ==========================================
+
     def clear_search(self):
 
         self.search_entry.delete(
             0,
             "end"
         )
-        
+
         self.from_date_entry.delete(
             0,
             "end"
         )
 
         self.to_date_entry.delete(
-           0,
-           "end"
+            0,
+            "end"
         )
 
         self.load_payments()
-        
+
+
+    # ==========================================
+    # FILTER PAYMENTS BY DATE
+    # ==========================================
+
     def filter_by_date(self):
 
         from_date = self.from_date_entry.get().strip()
+
         to_date = self.to_date_entry.get().strip()
 
+
         if not from_date or not to_date:
+
             messagebox.showerror(
                 "Date Filter",
                 "Please enter both From Date and To Date."
             )
+
             return
 
+
         try:
+
             from datetime import datetime
 
             datetime.strptime(
@@ -266,6 +366,7 @@ class PaymentHistoryPage:
 
             return
 
+
         if from_date > to_date:
 
             messagebox.showerror(
@@ -275,13 +376,22 @@ class PaymentHistoryPage:
 
             return
 
+
         payments = PaymentDB.filter_payments_by_date(
             from_date,
             to_date
         )
 
+
+        self.update_payment_summary(
+            payments
+        )
+
+
         for item in self.tree.get_children():
+
             self.tree.delete(item)
+
 
         for payment in payments:
 
@@ -297,3 +407,46 @@ class PaymentHistoryPage:
                     payment["transaction_id"] or "-"
                 )
             )
+
+
+    # ==========================================
+    # UPDATE PAYMENT SUMMARY
+    # ==========================================
+
+    def update_payment_summary(self, payments):
+
+        total_amount = 0
+        cash_amount = 0
+        upi_amount = 0
+
+
+        for payment in payments:
+
+            amount = float(
+                payment["amount_paid"]
+            )
+
+            total_amount += amount
+
+
+            if payment["payment_method"] == "Cash":
+
+                cash_amount += amount
+
+
+            elif payment["payment_method"] == "UPI":
+
+                upi_amount += amount
+
+
+        self.total_payment_label.configure(
+            text=f"Total Payments : ₹{total_amount:.2f}"
+        )
+
+        self.cash_label.configure(
+            text=f"Cash : ₹{cash_amount:.2f}"
+        )
+
+        self.upi_label.configure(
+            text=f"UPI : ₹{upi_amount:.2f}"
+        )
