@@ -295,7 +295,11 @@ class PaymentHistoryPage:
            weight=1
         )
 
-
+        self.tree.bind(
+            "<Double-1>",
+            self.show_payment_details
+        )
+        
         # ==============================
         # LOAD DATA
         # ==============================
@@ -602,3 +606,105 @@ class PaymentHistoryPage:
         )
 
         self.load_payments()
+        
+    # ==========================================
+    # SHOW PAYMENT DETAILS
+    # ==========================================
+
+    def show_payment_details(self, event):
+
+        selected = self.tree.focus()
+
+        if not selected:
+            return
+
+        values = self.tree.item(
+            selected,
+            "values"
+        )
+
+        if not values:
+            return
+
+        details_window = ctk.CTkToplevel()
+
+        details_window.title(
+            "Payment Details"
+        )
+
+        details_window.geometry(
+            "500x400"
+        )
+
+        details_window.grab_set()
+
+
+        title = ctk.CTkLabel(
+            details_window,
+            text="Payment Details",
+            font=("Segoe UI", 24, "bold")
+        )
+
+        title.pack(
+            pady=20
+        )
+
+
+        details = [
+            ("Payment ID", values[0]),
+            ("Invoice Number", values[1]),
+            ("Payment Date", values[2]),
+            ("Amount Paid", values[3]),
+            ("Payment Method", values[4]),
+            ("Transaction ID", values[5])
+        ]
+
+
+        for label, value in details:
+
+            row = ctk.CTkFrame(
+                details_window
+            )
+
+            row.pack(
+                fill="x",
+                padx=30,
+                pady=5
+            )
+
+
+            label_widget = ctk.CTkLabel(
+                row,
+                text=f"{label}:",
+                width=150,
+                anchor="w",
+                font=("Segoe UI", 14, "bold")
+            )
+
+            label_widget.pack(
+                side="left"
+            )
+
+
+            value_widget = ctk.CTkLabel(
+                row,
+                text=str(value),
+                anchor="w",
+                font=("Segoe UI", 14)
+            )
+
+            value_widget.pack(
+                side="left",
+                padx=10
+            )
+
+
+        close_btn = ctk.CTkButton(
+            details_window,
+            text="Close",
+            command=details_window.destroy
+        )
+
+        close_btn.pack(
+            pady=25
+        )
