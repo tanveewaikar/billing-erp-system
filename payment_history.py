@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from database.payment_db import PaymentDB
 
 
@@ -68,6 +68,54 @@ class PaymentHistoryPage:
         )
 
         clear_btn.pack(
+            side="left",
+            padx=10,
+            pady=10
+        )
+        
+        # ==============================
+        # DATE FILTER
+        # ==============================
+
+        date_frame = ctk.CTkFrame(parent)
+
+        date_frame.pack(
+            fill="x",
+            padx=20,
+            pady=(0, 10)
+        )
+
+        self.from_date_entry = ctk.CTkEntry(
+            date_frame,
+            width=150,
+            placeholder_text="From Date"
+        )
+
+        self.from_date_entry.pack(
+            side="left",
+            padx=10,
+            pady=10
+        )
+
+        self.to_date_entry = ctk.CTkEntry(
+            date_frame,
+            width=150,
+            placeholder_text="To Date"
+        )
+
+        self.to_date_entry.pack(
+            side="left",
+            padx=10,
+            pady=10
+        )
+
+        filter_btn = ctk.CTkButton(
+            date_frame,
+            text="Filter",
+            command=self.filter_by_date
+        )
+
+        filter_btn.pack(
             side="left",
             padx=10,
             pady=10
@@ -171,5 +219,81 @@ class PaymentHistoryPage:
             0,
             "end"
         )
+        
+        self.from_date_entry.delete(
+            0,
+            "end"
+        )
+
+        self.to_date_entry.delete(
+           0,
+           "end"
+        )
 
         self.load_payments()
+        
+    def filter_by_date(self):
+
+        from_date = self.from_date_entry.get().strip()
+        to_date = self.to_date_entry.get().strip()
+
+        if not from_date or not to_date:
+            messagebox.showerror(
+                "Date Filter",
+                "Please enter both From Date and To Date."
+            )
+            return
+
+        try:
+            from datetime import datetime
+
+            datetime.strptime(
+                from_date,
+                "%Y-%m-%d"
+            )
+
+            datetime.strptime(
+                to_date,
+                "%Y-%m-%d"
+            )
+
+        except ValueError:
+
+            messagebox.showerror(
+                "Date Filter",
+                "Please use date format YYYY-MM-DD."
+            )
+
+            return
+
+        if from_date > to_date:
+
+            messagebox.showerror(
+                "Date Filter",
+                "From Date cannot be greater than To Date."
+            )
+
+            return
+
+        payments = PaymentDB.filter_payments_by_date(
+            from_date,
+            to_date
+        )
+
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        for payment in payments:
+
+            self.tree.insert(
+                "",
+                "end",
+                values=(
+                    payment["payment_id"],
+                    payment["invoice_number"],
+                    payment["payment_date"],
+                    f"₹{payment['amount_paid']:.2f}",
+                    payment["payment_method"],
+                    payment["transaction_id"] or "-"
+                )
+            )

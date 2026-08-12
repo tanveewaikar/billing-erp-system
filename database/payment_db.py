@@ -147,3 +147,39 @@ class PaymentDB:
         conn.close()
 
         return payments
+    
+    @staticmethod
+    def filter_payments_by_date(from_date, to_date):
+
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+        SELECT
+            p.payment_id,
+            i.invoice_number,
+            p.payment_date,
+            p.amount_paid,
+            p.payment_method,
+            p.transaction_id
+        FROM payments p
+        INNER JOIN invoices i
+            ON p.invoice_id = i.invoice_id
+        WHERE DATE(p.payment_date) BETWEEN %s AND %s
+        ORDER BY p.payment_id DESC
+        """
+
+        cursor.execute(
+            query,
+            (
+                from_date,
+                to_date
+            )
+        )
+
+        payments = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return payments
