@@ -106,3 +106,44 @@ class PaymentDB:
 
         return payments
     
+    @staticmethod
+    def search_payments(search_text):
+
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+        SELECT
+            p.payment_id,
+            i.invoice_number,
+            p.payment_date,
+            p.amount_paid,
+            p.payment_method,
+            p.transaction_id
+        FROM payments p
+        INNER JOIN invoices i
+            ON p.invoice_id = i.invoice_id
+        WHERE
+            i.invoice_number LIKE %s
+            OR p.payment_method LIKE %s
+            OR p.transaction_id LIKE %s
+        ORDER BY p.payment_id DESC
+        """
+
+        search_value = f"%{search_text}%"
+
+        cursor.execute(
+            query,
+            (
+                search_value,
+                search_value,
+                search_value
+            )
+        )
+
+        payments = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return payments
