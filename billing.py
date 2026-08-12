@@ -305,21 +305,30 @@ class BillingPage:
             self.gst_amount += gst_amount
             self.grand_total += total
 
+        # Display current bill totals
+        display_subtotal = self.subtotal_amount
+        display_gst = self.gst_amount
+        display_total = self.grand_total
+
+        # If the current bill has already been converted
+        # into an invoice, keep showing that invoice's totals
+        if self.current_invoice_id is not None and not self.bill_items:
+
+            display_subtotal = self.current_subtotal
+            display_gst = self.current_gst
+            display_total = self.current_invoice_total
+
+
         self.subtotal_label.configure(
-            text=f"Subtotal : ₹{self.subtotal_amount:.2f}"
+            text=f"Subtotal : ₹{display_subtotal:.2f}"
         )
 
         self.gst_label.configure(
-            text=f"GST : ₹{self.gst_amount:.2f}"
+            text=f"GST : ₹{display_gst:.2f}"
         )
 
-        display_total = self.grand_total
-
-        if self.current_invoice_id is not None:
-           display_total = self.current_invoice_total
-
         self.total_label.configure(
-           text=f"Grand Total : ₹{display_total:.2f}"
+            text=f"Grand Total : ₹{display_total:.2f}"
         )
         
     def generate_invoice(self):
