@@ -67,7 +67,18 @@ class PaymentHistoryPage:
             pady=10
         )
 
+        refresh_btn = ctk.CTkButton(
+            search_frame,
+            text="Refresh",
+            command=self.refresh_payments
+        )
 
+        refresh_btn.pack(
+            side="left",
+            padx=10,
+            pady=10
+        )
+        
         # ==============================
         # DATE FILTER
         # ==============================
@@ -526,3 +537,26 @@ class PaymentHistoryPage:
         return payment_date.strftime(
             "%d-%m-%Y %H:%M"
         )
+        
+    # ==========================================
+    # REFRESH PAYMENTS
+    # ==========================================
+
+    def refresh_payments(self):
+
+        self.search_entry.delete(
+            0,
+            "end"
+        )
+
+        self.from_date_entry.delete(
+            0,
+            "end"
+        )
+
+        self.to_date_entry.delete(
+            0,
+            "end"
+        )
+
+        self.load_payments()
