@@ -266,7 +266,9 @@ class PaymentHistoryPage:
                 values=(
                     payment["payment_id"],
                     payment["invoice_number"],
-                    payment["payment_date"],
+                    self.format_payment_date(
+                        payment["payment_date"]
+                    ),
                     f"₹{payment['amount_paid']:.2f}",
                     payment["payment_method"],
                     payment["transaction_id"] or "-"
@@ -312,7 +314,9 @@ class PaymentHistoryPage:
                 values=(
                     payment["payment_id"],
                     payment["invoice_number"],
-                    payment["payment_date"],
+                    self.format_payment_date(
+                        payment["payment_date"]
+                    ),
                     f"₹{payment['amount_paid']:.2f}",
                     payment["payment_method"],
                     payment["transaction_id"] or "-"
@@ -423,7 +427,9 @@ class PaymentHistoryPage:
                 values=(
                     payment["payment_id"],
                     payment["invoice_number"],
-                    payment["payment_date"],
+                    self.format_payment_date(
+                        payment["payment_date"]
+                    ),
                     f"₹{payment['amount_paid']:.2f}",
                     payment["payment_method"],
                     payment["transaction_id"] or "-"
@@ -490,4 +496,17 @@ class PaymentHistoryPage:
 
         self.bank_transfer_label.configure(
             text=f"Bank Transfer : ₹{bank_transfer_amount:.2f}"
+        )
+        
+    # ==========================================
+    # FORMAT PAYMENT DATE
+    # ==========================================
+
+    def format_payment_date(self, payment_date):
+
+        if not payment_date:
+            return "-"
+
+        return payment_date.strftime(
+            "%d-%m-%Y %H:%M"
         )
