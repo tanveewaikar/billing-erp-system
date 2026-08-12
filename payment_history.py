@@ -163,7 +163,29 @@ class PaymentHistoryPage:
             pady=10
         )
 
+        self.card_label = ctk.CTkLabel(
+            summary_frame,
+            text="Card : ₹0.00"
+        )
 
+        self.card_label.pack(
+            side="left",
+            padx=20,
+            pady=10
+        )
+
+
+        self.bank_transfer_label = ctk.CTkLabel(
+            summary_frame,
+            text="Bank Transfer : ₹0.00"
+        )
+
+        self.bank_transfer_label.pack(
+            side="left",
+            padx=20,
+            pady=10
+        )
+        
         # ==============================
         # PAYMENT TABLE
         # ==============================
@@ -418,7 +440,8 @@ class PaymentHistoryPage:
         total_amount = 0
         cash_amount = 0
         upi_amount = 0
-
+        card_amount = 0
+        bank_transfer_amount = 0
 
         for payment in payments:
 
@@ -437,6 +460,15 @@ class PaymentHistoryPage:
             elif payment["payment_method"] == "UPI":
 
                 upi_amount += amount
+                
+            elif payment["payment_method"] == "Card":
+
+                card_amount += amount
+
+
+            elif payment["payment_method"] == "Bank Transfer":
+
+                bank_transfer_amount += amount
 
 
         self.total_payment_label.configure(
@@ -449,4 +481,13 @@ class PaymentHistoryPage:
 
         self.upi_label.configure(
             text=f"UPI : ₹{upi_amount:.2f}"
+        )
+        
+        self.card_label.configure(
+            text=f"Card : ₹{card_amount:.2f}"
+        )
+
+
+        self.bank_transfer_label.configure(
+            text=f"Bank Transfer : ₹{bank_transfer_amount:.2f}"
         )
