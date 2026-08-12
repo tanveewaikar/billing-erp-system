@@ -22,6 +22,13 @@ class BillingPage:
         
         self.current_invoice_id = None
         self.current_invoice_total = 0
+        
+        self.current_invoice_number = None
+        self.current_customer_name = None
+        self.current_customer_details = None
+        self.current_bill_items = None
+        self.current_subtotal = 0
+        self.current_gst = 0
 
         title = ctk.CTkLabel(
             parent,
@@ -306,12 +313,16 @@ class BillingPage:
             text=f"GST : ₹{self.gst_amount:.2f}"
         )
 
+        display_total = self.grand_total
+
+        if self.current_invoice_id is not None:
+           display_total = self.current_invoice_total
+
         self.total_label.configure(
-            text=f"Grand Total : ₹{self.grand_total:.2f}"
+           text=f"Grand Total : ₹{display_total:.2f}"
         )
         
     def generate_invoice(self):
-        
         
         if not self.bill_items:
           messagebox.showerror(
@@ -369,6 +380,13 @@ class BillingPage:
         )
         self.current_invoice_id = invoice_id
         self.current_invoice_total = self.grand_total
+        
+        self.current_invoice_number = invoice_number
+        self.current_customer_name = customer_name
+        self.current_customer_details = customer_details
+        self.current_bill_items = self.bill_items.copy()
+        self.current_subtotal = self.subtotal_amount
+        self.current_gst = self.gst_amount
        
         for product_name, data in self.bill_items.items():
 
@@ -421,7 +439,8 @@ class BillingPage:
             self.bill_items,
             self.subtotal_amount,
             self.gst_amount,
-            self.grand_total
+            self.grand_total,
+            invoice_id
         )
             
         self.bill_items.clear()
@@ -491,7 +510,21 @@ class BillingPage:
             transaction_id or None
         )
         
+        generate_pdf(
+            self.current_invoice_number,
+            self.current_customer_name,
+            self.current_customer_details,
+            self.current_bill_items,
+            self.current_subtotal,
+            self.current_gst,
+            self.current_invoice_total,
+            self.current_invoice_id
+        )
         self.update_payment_summary()
+        
+        self.amount_paid.delete(0, "end")
+        self.transaction_id.delete(0, "end")
+
         messagebox.showinfo(
             "Success",
             "Payment saved successfully."

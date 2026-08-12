@@ -3,6 +3,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 from datetime import datetime
 from database.settings_db import SettingsDB
+from database.payment_db import PaymentDB
 import os
 
 
@@ -13,7 +14,8 @@ def generate_pdf(
     bill_items,
     subtotal,
     gst,
-    grand_total
+    grand_total,
+    invoice_id
 ):
 
     # Project root folder
@@ -43,6 +45,17 @@ def generate_pdf(
     width, height = letter
     
     settings = SettingsDB.get_settings()
+    
+    total_paid = PaymentDB.get_total_paid(
+       invoice_id
+    )
+
+    balance = grand_total - total_paid
+
+    payment_status = PaymentDB.get_payment_status(
+        invoice_id,
+        grand_total
+    )
 
     y = height - 50
 
@@ -307,31 +320,76 @@ def generate_pdf(
     y -= 30
 
     # Totals
+
+    c.setFont(
+       "Helvetica",
+       12
+    )
+
     c.drawString(
-        350,
-        y,
-        f"Subtotal : Rs.{subtotal:.2f}"
+       350,
+       y,
+       f"Subtotal : Rs.{subtotal:.2f}"
     )
 
     y -= 20
 
     c.drawString(
-        350,
-        y,
-        f"GST : Rs.{gst:.2f}"
+       350,
+       y,
+       f"GST : Rs.{gst:.2f}"
     )
 
     y -= 20
-    
-    c.setFont("Helvetica-Bold", 14)
+
+    # Grand Total
+    c.setFont(
+        "Helvetica-Bold",
+        14
+    )
+
     c.drawString(
         350,
         y,
         f"Grand Total : Rs.{grand_total:.2f}"
     )
 
+    y -= 25
+
+    # Payment Details
+    c.setFont(
+       "Helvetica",
+       11
+    )
+
+    c.drawString(
+       350,
+       y,
+       f"Paid Amount : Rs.{total_paid:.2f}"
+    )
+
+    y -= 20
+
+    c.drawString(
+        350,
+        y,
+        f"Balance : Rs.{balance:.2f}"
+    )
+
+    y -= 20
+
+    c.drawString(
+        350,
+        y,
+        f"Status : {payment_status}"
+    )
+
     y -= 40
-    c.setFont("Helvetica", 12)
+
+    c.setFont(
+        "Helvetica",
+        12
+    )
     
     # Invoice Footer
 
