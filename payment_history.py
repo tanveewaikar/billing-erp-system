@@ -6,18 +6,7 @@ from database.payment_db import PaymentDB
 class PaymentHistoryPage:
 
     def __init__(self, parent):
-
-        title = ctk.CTkLabel(
-            parent,
-            text="Payment History",
-            font=("Segoe UI", 26, "bold")
-        )
-
-        title.pack(
-            pady=20
-        )
-
-
+        
         table_frame = ctk.CTkFrame(parent)
 
         table_frame.pack(
