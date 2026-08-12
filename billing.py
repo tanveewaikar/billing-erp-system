@@ -202,6 +202,9 @@ class BillingPage:
 
         generate_btn = ctk.CTkButton(btn_frame, text="Generate Invoice", command=self.generate_invoice)
         generate_btn.pack(side="left", padx=10)
+        
+        new_invoice_btn = ctk.CTkButton(btn_frame, text="New Invoice", command=self.new_invoice)
+        new_invoice_btn.pack( side="left", padx=10)
 
         print_btn = ctk.CTkButton(btn_frame, text="Print")
         print_btn.pack(side="left", padx=10)
@@ -605,3 +608,35 @@ class BillingPage:
             del self.bill_items[product_name]
 
         self.refresh_bill_table()
+        
+    def new_invoice(self):
+
+        self.bill_items.clear()
+
+        self.subtotal_amount = 0
+        self.gst_amount = 0
+        self.grand_total = 0
+
+        self.current_invoice_id = None
+        self.current_invoice_total = 0
+
+        self.current_invoice_number = None
+        self.current_customer_name = None
+        self.current_customer_details = None
+        self.current_bill_items = None
+        self.current_subtotal = 0
+        self.current_gst = 0
+
+        self.customer.set("")
+        self.product_combo.set("")
+
+        self.qty.delete(0, "end")
+
+        self.amount_paid.delete(0, "end")
+        self.transaction_id.delete(0, "end")
+
+        self.payment_method.set("Cash")
+
+        self.refresh_bill_table()
+
+        self.update_payment_summary()
