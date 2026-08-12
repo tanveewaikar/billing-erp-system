@@ -77,4 +77,32 @@ class PaymentDB:
 
         return "PARTIALLY PAID"
     
+    @staticmethod
+    def get_all_payments():
+
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+        SELECT
+            p.payment_id,
+            i.invoice_number,
+            p.payment_date,
+            p.amount_paid,
+            p.payment_method,
+            p.transaction_id
+        FROM payments p
+        INNER JOIN invoices i
+            ON p.invoice_id = i.invoice_id
+        ORDER BY p.payment_id DESC
+        """
+
+        cursor.execute(query)
+
+        payments = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return payments
     
