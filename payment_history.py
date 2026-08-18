@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import ttk, messagebox
 from database.payment_db import PaymentDB
-
+import os
 
 class PaymentHistoryPage:
 
@@ -698,7 +698,18 @@ class PaymentHistoryPage:
                 padx=10
             )
 
+        open_invoice_btn = ctk.CTkButton(
+            details_window,
+            text="Open Invoice PDF",
+            command=lambda: self.open_invoice_pdf(
+                values[1]
+            )
+        )
 
+        open_invoice_btn.pack(
+            pady=5
+        )
+        
         close_btn = ctk.CTkButton(
             details_window,
             text="Close",
@@ -708,3 +719,34 @@ class PaymentHistoryPage:
         close_btn.pack(
             pady=25
         )
+        
+    # ==========================================
+    # OPEN INVOICE PDF
+    # ==========================================
+
+    def open_invoice_pdf(self, invoice_number):
+
+        project_root = os.path.dirname(
+            os.path.abspath(__file__)
+        )
+
+        invoices_folder = os.path.join(
+            project_root,
+            "invoices"
+        )
+
+        pdf_path = os.path.join(
+            invoices_folder,
+            f"{invoice_number}.pdf"
+        )
+
+        if not os.path.exists(pdf_path):
+
+            messagebox.showerror(
+                "Invoice Not Found",
+                f"Invoice PDF not found:\n{pdf_path}"
+            )
+
+            return
+
+        os.startfile(pdf_path)

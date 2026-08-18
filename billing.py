@@ -1,3 +1,4 @@
+import os
 import customtkinter as ctk
 from tkinter import ttk
 from database.customer_db import CustomerDB
@@ -22,6 +23,7 @@ class BillingPage:
         
         self.current_invoice_id = None
         self.current_invoice_total = 0
+        self.current_pdf_path = None
         
         self.current_invoice_number = None
         self.current_customer_name = None
@@ -206,7 +208,7 @@ class BillingPage:
         new_invoice_btn = ctk.CTkButton(btn_frame, text="New Invoice", command=self.new_invoice)
         new_invoice_btn.pack( side="left", padx=10)
 
-        print_btn = ctk.CTkButton(btn_frame, text="Print")
+        print_btn = ctk.CTkButton(btn_frame, text="Print",command=self.print_invoice)
         print_btn.pack(side="left", padx=10)
 
         email_btn = ctk.CTkButton(btn_frame, text="Email Invoice")
@@ -444,7 +446,7 @@ class BillingPage:
             
         print("Invoice ID:", invoice_id)  
         
-        generate_pdf(
+        self.current_pdf_path = generate_pdf(
             invoice_number,
             customer_name,
             customer_details,
@@ -531,7 +533,7 @@ class BillingPage:
             transaction_id or None
         )
         
-        generate_pdf(
+        self.current_pdf_path = generate_pdf(
             self.current_invoice_number,
             self.current_customer_name,
             self.current_customer_details,
@@ -628,6 +630,7 @@ class BillingPage:
 
         self.current_invoice_id = None
         self.current_invoice_total = 0
+        self.current_pdf_path = None
 
         self.current_invoice_number = None
         self.current_customer_name = None
@@ -649,3 +652,45 @@ class BillingPage:
         self.refresh_bill_table()
 
         self.update_payment_summary()
+        
+    def print_invoice(self):
+
+        if self.current_invoice_id is None:
+            messagebox.showerror(
+                "Print Error",
+                "Please generate an invoice first."
+            )
+            return
+
+        if not self.current_pdf_path:
+            messagebox.showerror(
+                "Print Error",
+                "Invoice PDF not found."
+            )
+            return
+
+        if not os.path.exists(self.current_pdf_path):
+            messagebox.showerror(
+                "Print Error",
+                "Invoice PDF file does not exist."
+            )
+            return
+
+        try:
+
+            os.startfile(
+                self.current_pdf_path,
+                "print"
+            )
+
+            messagebox.showinfo(
+                "Print",
+                "Invoice sent to the default printer."
+            )
+
+        except Exception as e:
+
+            messagebox.showerror(
+                "Print Error",
+                str(e)
+            )
