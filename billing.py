@@ -8,6 +8,7 @@ from database.invoice_db import InvoiceDB
 from utils.pdf_generator import generate_pdf
 from database.settings_db import SettingsDB
 from database.stock_log_db import StockLogDB
+from utils.email_sender import send_invoice_email
 from database.payment_db import PaymentDB
 
 
@@ -211,7 +212,7 @@ class BillingPage:
         print_btn = ctk.CTkButton(btn_frame, text="Print",command=self.print_invoice)
         print_btn.pack(side="left", padx=10)
 
-        email_btn = ctk.CTkButton(btn_frame, text="Email Invoice")
+        email_btn = ctk.CTkButton(btn_frame, text="Email Invoice", command=self.email_invoice)
         email_btn.pack(side="left", padx=10)
         
     def add_product_to_bill(self):
@@ -620,6 +621,64 @@ class BillingPage:
 
         self.refresh_bill_table()
         
+        
+    def email_invoice(self):
+
+        if self.current_invoice_id is None:
+            messagebox.showerror(
+                "Email Invoice",
+                "Please generate an invoice first."
+            )
+            return
+
+        if not self.current_pdf_path:
+            messagebox.showerror(
+                "Email Invoice",
+                "Invoice PDF not found."
+            )
+            return
+
+        if not os.path.exists(self.current_pdf_path):
+            messagebox.showerror(
+                "Email Invoice",
+                "Invoice PDF file does not exist."
+            )
+            return
+
+        customer_email = self.current_customer_details.get("email")
+
+        if not customer_email:
+            messagebox.showerror(
+                "Email Invoice",
+                "Customer email address is not available."
+            )
+            return
+
+        settings = SettingsDB.get_settings()
+
+        if not settings:
+            messagebox.showerror(
+                "Email Invoice",
+                "Company settings not found."
+            )
+            return
+
+        sender_email = settings.get("email")
+
+        if not sender_email:
+            messagebox.showerror(
+                "Email Invoice",
+                "Company email is not configured."
+            )
+            return
+
+        messagebox.showinfo(
+            "Email Invoice",
+            "Email configuration is ready.\n\n"
+            "We will configure the secure email password in the next step."
+        )
+        
+        
     def new_invoice(self):
 
         self.bill_items.clear()
@@ -678,15 +737,7 @@ class BillingPage:
 
         try:
 
-            os.startfile(
-                self.current_pdf_path,
-                "print"
-            )
-
-            messagebox.showinfo(
-                "Print",
-                "Invoice sent to the default printer."
-            )
+            os.startfile(self.current_pdf_path)
 
         except Exception as e:
 
