@@ -51,6 +51,51 @@ class CustomersPage:
         
         delete_btn = ctk.CTkButton(form,text="Delete Customer", fg_color="red",hover_color="darkred",command=self.delete_customer)
         delete_btn.grid(row=2, column=2, pady=20)
+        
+        # ==========================================
+        # SEARCH
+        # ==========================================
+
+        search_frame = ctk.CTkFrame(parent)
+        search_frame.pack(
+            fill="x",
+            padx=20,
+            pady=10
+        )
+
+        self.search_entry = ctk.CTkEntry(
+            search_frame,
+            width=300,
+            placeholder_text="Search Name / Phone / Email"
+        )
+        self.search_entry.pack(
+            side="left",
+            padx=10,
+            pady=10
+        )
+
+        search_btn = ctk.CTkButton(
+            search_frame,
+            text="Search",
+            command=self.search_customers
+        )
+        search_btn.pack(
+            side="left",
+            padx=10,
+            pady=10
+        )
+
+        show_all_btn = ctk.CTkButton(
+            search_frame,
+            text="Show All",
+            command=self.load_customers
+        )
+        show_all_btn.pack(
+            side="left",
+            padx=10,
+            pady=10
+        )
+        
 
         table_frame = ctk.CTkFrame(parent)
         table_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -272,6 +317,35 @@ class CustomersPage:
             "end",
             values=customer
         )
+            
+    # ==========================================
+    # SEARCH CUSTOMERS
+    # ==========================================
+
+    def search_customers(self):
+
+        keyword = self.search_entry.get().strip()
+
+        if not keyword:
+            self.load_customers()
+            return
+
+        customers = self.customer_db.search_customers(
+            keyword
+        )
+
+        # Clear existing rows
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        # Display search results
+        for customer in customers:
+
+            self.tree.insert(
+                "",
+                "end",
+                values=customer
+            )
             
     # ==========================================
     # SELECT CUSTOMER
