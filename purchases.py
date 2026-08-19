@@ -474,28 +474,61 @@ class PurchasesPage:
         self.search_entry.delete(0, "end")
         self.load_purchases()
         
+        
     def clear_fields(self):
 
+        # Reset supplier
         if self.supplier_combo.cget("values"):
-            self.supplier_combo.set(self.supplier_combo.cget("values")[0])
-            
-        if self.product_combo.cget("values"):
-            self.product_combo.set(self.product_combo.cget("values")[0])
+            self.supplier_combo.set(
+               self.supplier_combo.cget("values")[0]
+            )
+        else:
+            self.supplier_combo.set("")
 
+        # Reset product
+        if self.product_combo.cget("values"):
+            self.product_combo.set(
+                self.product_combo.cget("values")[0]
+            )
+        else:
+            self.product_combo.set("")
+
+        # Clear purchase price
         self.purchase_price.delete(0, "end")
+
+        # Clear quantity
         self.quantity.delete(0, "end")
 
+        # Reset total amount
         self.total_amount.configure(state="normal")
         self.total_amount.delete(0, "end")
         self.total_amount.insert(0, "0.00")
         self.total_amount.configure(state="readonly")
 
+        # Reset payment status
         self.payment_status.set("Pending")
 
+        # Clear search box
+        self.search_entry.delete(0, "end")
+
+        # Remove selected row from Treeview
+        selected_items = self.tree.selection()
+
+        if selected_items:
+            self.tree.selection_remove(selected_items)
+
+        # Reset selected purchase
         self.selected_purchase_id = None
-        self.update_btn.configure(state="disabled")
-        self.delete_btn.configure(state="disabled")
-        
+
+        # Disable update/delete buttons
+        self.update_btn.configure(
+            state="disabled"
+        )
+
+        self.delete_btn.configure(
+            state="disabled"
+        )
+      
     def validate_purchase(self):
 
         if self.purchase_price.get().strip() == "":
