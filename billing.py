@@ -654,30 +654,30 @@ class BillingPage:
             )
             return
 
-        settings = SettingsDB.get_settings()
+        customer_name = self.current_customer_name
+        invoice_number = self.current_invoice_number
 
-        if not settings:
-            messagebox.showerror(
-                "Email Invoice",
-                "Company settings not found."
+        try:
+
+            send_invoice_email(
+                customer_email=customer_email,
+                customer_name=customer_name,
+                invoice_number=invoice_number,
+                pdf_path=self.current_pdf_path
             )
-            return
 
-        sender_email = settings.get("email")
-
-        if not sender_email:
-            messagebox.showerror(
+            messagebox.showinfo(
                 "Email Invoice",
-                "Company email is not configured."
+                f"Invoice {invoice_number} sent successfully."
             )
-            return
 
-        messagebox.showinfo(
-            "Email Invoice",
-            "Email configuration is ready.\n\n"
-            "We will configure the secure email password in the next step."
-        )
-        
+        except Exception as e:
+
+            messagebox.showerror(
+                "Email Error",
+                str(e)
+            )
+            
         
     def new_invoice(self):
 

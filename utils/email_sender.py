@@ -2,16 +2,26 @@ import smtplib
 import os
 
 from email.message import EmailMessage
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 
 def send_invoice_email(
-    sender_email,
-    sender_password,
     customer_email,
     customer_name,
     invoice_number,
     pdf_path
 ):
+
+    sender_email = os.getenv("EMAIL_SENDER")
+    sender_password = os.getenv("EMAIL_PASSWORD")
+
+    if not sender_email or not sender_password:
+        raise Exception(
+            "Email credentials are not configured."
+        )
 
     message = EmailMessage()
 
@@ -31,7 +41,10 @@ Billing ERP
 """
     )
 
-    # Attach PDF
+    # ==============================
+    # ATTACH INVOICE PDF
+    # ==============================
+
     with open(pdf_path, "rb") as file:
 
         pdf_data = file.read()
@@ -43,7 +56,10 @@ Billing ERP
         filename=f"{invoice_number}.pdf"
     )
 
-    # Gmail SMTP
+    # ==============================
+    # CONNECT TO GMAIL
+    # ==============================
+
     with smtplib.SMTP_SSL(
         "smtp.gmail.com",
         465
