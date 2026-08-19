@@ -111,17 +111,45 @@ class SupplierDB:
         connection = get_connection()
         cursor = connection.cursor()
 
-        query = """
-        DELETE FROM suppliers
-        WHERE supplier_id = %s
-        """
+        try:
 
-        cursor.execute(query, (supplier_id,))
+            # Check whether supplier has purchase history
+            cursor.execute(
+                """
+                SELECT COUNT(*)
+                FROM purchases
+                WHERE supplier_id = %s
+                """,
+                (supplier_id,)
+            )
 
-        connection.commit()
+            purchase_count = cursor.fetchone()[0]
 
-        cursor.close()
-        connection.close()
+            if purchase_count > 0:
+
+                raise ValueError(
+                    "This supplier cannot be deleted because "
+                    "purchase history exists."
+                )
+
+            # Delete supplier only if no purchases exist
+            cursor.execute(
+                """
+                DELETE FROM suppliers
+                WHERE supplier_id = %s
+                """,
+                (supplier_id,)
+            )
+
+            connection.commit()
+
+        except Exception:
+            connection.rollback()
+            raise
+
+        finally:
+            cursor.close()
+            connection.close()
         
     @staticmethod
     def search_supplier(keyword):
