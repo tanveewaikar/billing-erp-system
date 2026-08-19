@@ -4,6 +4,7 @@ from reportlab.lib.utils import ImageReader
 from datetime import datetime
 from database.settings_db import SettingsDB
 from database.payment_db import PaymentDB
+from textwrap import wrap
 import os
 
 
@@ -199,26 +200,41 @@ def generate_pdf(
         filter(
             None,
             [
-               customer_details["address"],
-               customer_details["city"],
-               customer_details["state"],
-               customer_details["pincode"]
+                customer_details["address"],
+                customer_details["city"],
+                customer_details["state"],
+                customer_details["pincode"]
             ]
         )
     )
 
-    c.drawString(
-       350,
-       y - 95,
-       f"Address : {customer_address}"
-    )
-    
-    c.drawString(
-       350,
-       y - 115,
-       f"GST : {customer_details['gst_number'] or 'N/A'}"
+    # Customer Address
+    address_text = f"Address : {customer_address}"
+
+    address_lines = wrap(
+        address_text,
+        width=42
     )
 
+    address_y = y - 95
+
+    for line in address_lines:
+
+        c.drawString(
+            350,
+            address_y,
+            line
+        )
+
+    address_y -= 15
+
+
+    # Customer GST
+    c.drawString(
+        350,
+        address_y,
+        f"GST : {customer_details['gst_number'] or 'N/A'}"
+    )
 
     y -= 145
 
