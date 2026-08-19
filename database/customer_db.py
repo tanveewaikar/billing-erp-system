@@ -129,13 +129,42 @@ class CustomerDB:
 
     def delete_customer(self, customer_id):
 
-        query = """
-        DELETE FROM customers
-        WHERE customer_id = %s
-        """
+        try:
 
-        self.cursor.execute(query, (customer_id,))
-        self.connection.commit()
+            # Check whether customer has invoice history
+            self.cursor.execute(
+                """
+                SELECT COUNT(*)
+                FROM invoices
+                WHERE customer_id = %s
+                """,
+                (customer_id,)
+            )
+
+            invoice_count = self.cursor.fetchone()[0]
+
+            if invoice_count > 0:
+
+                raise ValueError(
+                    "This customer cannot be deleted because "
+                    "invoice history exists."
+                )
+
+            # Delete customer only if no invoices exist
+            self.cursor.execute(
+                """
+                DELETE FROM customers
+                WHERE customer_id = %s
+                """,
+                (customer_id,)
+            )
+
+            self.connection.commit()
+
+        except Exception:
+            self.connection.rollback()
+            raise
+        
         
     @staticmethod
     def get_customer_names():
