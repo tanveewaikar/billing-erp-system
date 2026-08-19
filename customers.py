@@ -81,10 +81,134 @@ class CustomersPage:
         self.load_customers()
     
     # ==========================================
+    # VALIDATE CUSTOMER
+    # ==========================================
+
+    def validate_customer(self):
+
+        name = self.name.get().strip()
+        phone = self.phone.get().strip()
+        email = self.email.get().strip()
+        address = self.address.get().strip()
+        city = self.city.get().strip()
+        state = self.state.get().strip()
+        pincode = self.pincode.get().strip()
+
+        # Customer Name
+        if not name:
+            messagebox.showwarning(
+                "Validation Error",
+                "Customer name is required."
+            )
+            return False
+
+        if not all(char.isalpha() or char.isspace() for char in name):
+            messagebox.showwarning(
+                "Validation Error",
+                "Customer name should contain only letters."
+            )
+            return False
+
+        # Phone
+        if not phone:
+            messagebox.showwarning(
+                "Validation Error",
+                "Phone number is required."
+            )
+            return False
+
+        if not phone.isdigit() or len(phone) != 10:
+            messagebox.showwarning(
+                "Validation Error",
+                "Phone number must contain exactly 10 digits."
+            )
+            return False
+
+        # Email
+        if not email:
+            messagebox.showwarning(
+                "Validation Error",
+                "Email is required."
+            )
+            return False
+
+        if "@" not in email or "." not in email.split("@")[-1]:
+            messagebox.showwarning(
+                "Validation Error",
+                "Please enter a valid email address."
+            )
+            return False
+
+        # Address
+        if not address:
+            messagebox.showwarning(
+                "Validation Error",
+                "Address is required."
+            )
+            return False
+        
+        if not any(char.isalpha() for char in address):
+            messagebox.showwarning(
+                "Validation Error",
+                 "Address must contain valid text."
+            )
+            return False
+
+        # City
+        if not city:
+            messagebox.showwarning(
+                "Validation Error",
+                "City is required."
+            )
+            return False
+        
+        if not all(char.isalpha() or char.isspace() for char in city):
+            messagebox.showwarning(
+                "Validation Error",
+                "City should contain only letters."
+            )
+            return False
+
+        # State
+        if not state:
+            messagebox.showwarning(
+                "Validation Error",
+                "State is required."
+            )
+            return False
+        
+        if not all(char.isalpha() or char.isspace() for char in state):
+            messagebox.showwarning(
+                "Validation Error",
+                "State should contain only letters."
+            )
+            return False
+
+        # Pincode
+        if not pincode:
+            messagebox.showwarning(
+                "Validation Error",
+                "Pincode is required."
+            )
+            return False
+
+        if not pincode.isdigit() or len(pincode) != 6:
+            messagebox.showwarning(
+                "Validation Error",
+                "Pincode must contain exactly 6 digits."
+            )
+            return False
+
+        return True
+    
+    # ==========================================
     # ADD CUSTOMER
     # ==========================================
 
     def add_customer(self):
+        
+        if not self.validate_customer():
+            return
 
         try:
 
@@ -203,7 +327,10 @@ class CustomersPage:
                 "Please select a customer first."
                 )
                 return
-
+            
+            if not self.validate_customer():
+                return
+            
             self.customer_db.update_customer(
                 customer_id=self.selected_customer_id,
                 customer_name=self.name.get(),
