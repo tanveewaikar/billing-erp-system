@@ -185,6 +185,44 @@ class CustomerDB:
 
         return customers
     
+    # ==========================================
+    # SEARCH CUSTOMERS
+    # ==========================================
+
+    def search_customers(self, keyword):
+
+        query = """
+        SELECT
+            customer_id,
+            customer_name,
+            phone,
+            email,
+            gst_number,
+            address,
+            city,
+            state,
+            pincode
+        FROM customers
+        WHERE
+            customer_name LIKE %s
+            OR phone LIKE %s
+            OR email LIKE %s
+        ORDER BY customer_id DESC
+        """
+
+        search_value = f"%{keyword}%"
+
+        self.cursor.execute(
+            query,
+            (
+                search_value,
+                search_value,
+                search_value
+            )
+        )
+        return self.cursor.fetchall()
+    
+    
     @staticmethod
     def get_customer_by_name(customer_name):
 
