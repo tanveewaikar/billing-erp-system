@@ -50,6 +50,9 @@ class ProductsPage:
 
         self.delete_btn = ctk.CTkButton( btn_frame, text="Delete Product", command=self.delete_product)
         self.delete_btn.pack(side="left", padx=10)
+        
+        self.clear_btn = ctk.CTkButton(btn_frame,text="Clear", command=self.clear_fields)
+        self.clear_btn.pack(side="left", padx=10)
 
         table_frame = ctk.CTkFrame(parent)
         table_frame.pack(fill="both", expand=True, padx=20, pady=20)
@@ -339,9 +342,9 @@ class ProductsPage:
                 self.product_name.get().strip(),
                 self.barcode.get().strip(),
                 float(self.purchase_price.get() ),
-                float(self.price.get() or 0),
-                float(self.gst.get() or 0),
-                int(self.stock.get() or 0),
+                float(self.price.get()),
+                float(self.gst.get()),
+                int(self.stock.get()),
                 self.unit.get().strip()
             )
 

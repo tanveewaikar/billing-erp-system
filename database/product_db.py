@@ -144,24 +144,72 @@ class ProductDB:
         cursor.close()
         conn.close()
         
+        
     @staticmethod
     def delete_product(product_id):
 
         conn = get_connection()
         cursor = conn.cursor()
 
-        cursor.execute(
-           """
-           DELETE FROM products
-           WHERE product_id=%s
-           """,
-           (product_id,)
-        )
+        try:
 
-        conn.commit()
+            # Check purchase history
+            cursor.execute(
+               """
+               SELECT COUNT(*)
+               FROM purchase_items
+               WHERE product_id = %s
+               """,
+               (product_id,)
+            )
 
-        cursor.close()
-        conn.close()
+            purchase_count = cursor.fetchone()[0]
+
+            if purchase_count > 0:
+                raise ValueError(
+                    "This product cannot be deleted because "
+                    "purchase history exists."
+                )
+
+            # Check invoice history
+            cursor.execute(
+                """
+                SELECT COUNT(*)
+                FROM invoice_items
+                WHERE product_id = %s
+                """,
+                (product_id,)
+            )
+
+            invoice_count = cursor.fetchone()[0]
+
+            if invoice_count > 0:
+                raise ValueError(
+                    "This product cannot be deleted because "
+                    "invoice history exists."
+                )
+
+            # Delete product only if no transaction history exists
+            cursor.execute(
+                """
+                DELETE FROM products
+                WHERE product_id = %s
+                """,
+                (product_id,)
+            )
+
+            conn.commit()
+
+        except Exception:
+
+            conn.rollback()
+            raise
+
+        finally:
+
+            cursor.close()
+            conn.close()
+        
         
     @staticmethod
     def get_product_names():
