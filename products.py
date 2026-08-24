@@ -77,37 +77,177 @@ class ProductsPage:
         )
         self.load_products()
         
-    def add_product(self):
+        
+    def validate_product(self):
 
+        product_name = self.product_name.get().strip()
+        purchase_price = self.purchase_price.get().strip()
+        selling_price = self.price.get().strip()
+        stock_quantity = self.stock.get().strip()
+        gst_percent = self.gst.get().strip()
+        barcode = self.barcode.get().strip()
+        unit = self.unit.get().strip()
+
+        # Product Name
+        if not product_name:
+            messagebox.showwarning(
+               "Validation Error",
+                "Product name is required."
+            )
+            return False
+
+        if product_name.isdigit():
+            messagebox.showwarning(
+                "Validation Error",
+                "Product name cannot contain only numbers."
+            )
+            return False
+
+        # Purchase Price
+        if not purchase_price:
+            messagebox.showwarning(
+                "Validation Error",
+                "Purchase price is required."
+            )
+            return False
+
+        try:
+            purchase_price = float(purchase_price)
+
+            if purchase_price < 0:
+                messagebox.showwarning(
+                    "Validation Error",
+                    "Purchase price cannot be negative."
+                )
+                return False
+
+        except ValueError:
+            messagebox.showwarning(
+                "Validation Error",
+                "Invalid purchase price."
+            )
+            return False
+
+        # Selling Price
+        if not selling_price:
+            messagebox.showwarning(
+                "Validation Error",
+                "Selling price is required."
+            )
+            return False
+
+        try:
+            selling_price = float(selling_price)
+
+            if selling_price <= 0:
+                messagebox.showwarning(
+                   "Validation Error",
+                    "Selling price must be greater than zero."
+                )
+                return False
+
+        except ValueError:
+            messagebox.showwarning(
+                "Validation Error",
+                "Invalid selling price."
+            )
+            return False
+
+        # Selling Price vs Purchase Price
+        if selling_price < purchase_price:
+            messagebox.showwarning(
+                "Validation Error",
+                "Selling price cannot be less than purchase price."
+            )
+            return False
+
+        # Stock Quantity
+        if not stock_quantity:
+            messagebox.showwarning(
+                "Validation Error",
+                "Stock quantity is required."
+            )
+            return False
+
+        try:
+            stock_quantity = int(stock_quantity)
+
+            if stock_quantity < 0:
+                messagebox.showwarning(
+                    "Validation Error",
+                    "Stock quantity cannot be negative."
+                )
+                return False
+
+        except ValueError:
+            messagebox.showwarning(
+                "Validation Error",
+                "Stock quantity must be a whole number."
+            )
+            return False
+
+        # GST
+        if not gst_percent:
+            messagebox.showwarning(
+                "Validation Error",
+                "GST percentage is required."
+            )
+            return False
+
+        try:
+            gst_percent = float(gst_percent)
+
+            if gst_percent < 0 or gst_percent > 100:
+                messagebox.showwarning(
+                    "Validation Error",
+                    "GST must be between 0 and 100."
+                )
+                return False
+
+        except ValueError:
+            messagebox.showwarning(
+                "Validation Error",
+                "Invalid GST percentage."
+            )
+            return False
+
+        # Barcode
+        if not barcode:
+            messagebox.showwarning(
+                "Validation Error",
+                "Barcode is required."
+            )
+            return False
+
+        # Unit
+        if not unit:
+            messagebox.showwarning(
+                "Validation Error",
+                "Unit is required."
+            )
+            return False
+
+        return True
+        
+    def add_product(self):
+        if not self.validate_product():
+           return
+       
         product_name = self.product_name.get().strip()
         selling_price = self.price.get().strip()
         stock_quantity = self.stock.get().strip()
         gst_percent = self.gst.get().strip()
-
-        if not product_name:
-           messagebox.showerror(
-             "Error",
-             "Product name is required"
-           )
-           return
-        
-        if not self.barcode.get().strip():
-            messagebox.showerror(
-             "Error",
-             "Barcode is required"
-            )
-            return
 
         try:
 
             ProductDB.add_product(
               product_name,
               self.barcode.get().strip(),
-              float(self.purchase_price.get() or 0),
+              float(self.purchase_price.get()),
               float(selling_price),
               float(gst_percent),
               int(stock_quantity),
-              self.unit.get().strip() or "pcs"
+              self.unit.get().strip()
             )
 
             messagebox.showinfo(
@@ -189,18 +329,20 @@ class ProductsPage:
             "Please select a product"
            )
            return
- 
+        if not self.validate_product():
+            return
+        
         try:
 
             ProductDB.update_product(
                 self.selected_product_id,
                 self.product_name.get().strip(),
                 self.barcode.get().strip(),
-                float(self.purchase_price.get() or 0),
+                float(self.purchase_price.get() ),
                 float(self.price.get() or 0),
                 float(self.gst.get() or 0),
                 int(self.stock.get() or 0),
-                self.unit.get().strip() or "pcs"
+                self.unit.get().strip()
             )
 
             messagebox.showinfo(

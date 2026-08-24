@@ -469,8 +469,7 @@ class PaymentHistoryPage:
             )
 
             return
-
-
+      
         payments = PaymentDB.filter_payments_by_date(
             from_date,
             to_date
