@@ -81,6 +81,13 @@ class SuppliersPage:
         )
         self.delete_btn.pack(side="left", padx=10)
         
+        self.clear_btn = ctk.CTkButton(
+            btn_frame,
+            text="clear",
+            command=self.clear_supplier_fields
+        )
+        self.clear_btn.pack(side="left", padx=10)
+        
         # ==========================
             # Search bar
         # ==========================
@@ -147,20 +154,108 @@ class SuppliersPage:
         )
 
         self.load_suppliers()
-        
-    def add_supplier(self):
+    
+    # ==========================================
+    # VALIDATE SUPPLIER
+    # ==========================================
+
+    def validate_supplier(self):
 
         supplier_name = self.supplier_name.get().strip()
         contact_person = self.contact_person.get().strip()
         phone = self.phone.get().strip()
         email = self.email.get().strip()
         address = self.address.get().strip()
+
+        # Supplier Name
         if not supplier_name:
-           messagebox.showerror(
-            "Error",
-            "Supplier name is required."
-           )
-           return
+            messagebox.showwarning(
+                "Validation Error",
+                "Supplier name is required."
+            )
+            return False
+
+        if supplier_name.isdigit():
+            messagebox.showwarning(
+                "Validation Error",
+                "Supplier name cannot contain only numbers."
+            )
+            return False
+
+        # Contact Person
+        if not contact_person:
+            messagebox.showwarning(
+                "Validation Error",
+                "Contact person is required."
+            )
+            return False
+
+        if contact_person.isdigit():
+            messagebox.showwarning(
+                "Validation Error",
+                "Contact person cannot contain only numbers."
+            )
+            return False
+
+        # Phone
+        if not phone:
+            messagebox.showwarning(
+                "Validation Error",
+                "Phone number is required."
+            )
+            return False
+
+        if not phone.isdigit() or len(phone) != 10:
+            messagebox.showwarning(
+                "Validation Error",
+                "Phone number must contain exactly 10 digits."
+            )
+            return False
+
+        # Email
+        if not email:
+            messagebox.showwarning(
+                "Validation Error",
+                "Email is required."
+            )
+            return False
+
+        if "@" not in email or "." not in email:
+            messagebox.showwarning(
+                "Validation Error",
+                "Please enter a valid email address."
+            )
+            return False
+
+        # Address
+        if not address:
+            messagebox.showwarning(
+                "Validation Error",
+                "Address is required."
+            )
+            return False
+
+        if address.isdigit():
+            messagebox.showwarning(
+                "Validation Error",
+                "Address cannot contain only numbers."
+            )
+            return False
+
+        return True
+    
+      
+    def add_supplier(self):
+        
+        if not self.validate_supplier():
+            return
+
+        supplier_name = self.supplier_name.get().strip()
+        contact_person = self.contact_person.get().strip()
+        phone = self.phone.get().strip()
+        email = self.email.get().strip()
+        address = self.address.get().strip()
+
         try:
 
            SupplierDB.add_supplier(
@@ -238,6 +333,9 @@ class SuppliersPage:
                "Error",
                "Please select a supplier."
             )
+            return
+        
+        if not self.validate_supplier():
             return
 
         try:
@@ -327,4 +425,16 @@ class SuppliersPage:
                 values=supplier
             )
             
-    
+    # ==========================================
+    # CLEAR SUPPLIER FIELDS
+    # ==========================================
+
+    def clear_supplier_fields(self):
+
+        self.clear_fields()
+
+        self.selected_supplier_id = None
+
+        # Remove selected row from treeview
+        for item in self.tree.selection():
+            self.tree.selection_remove(item)
