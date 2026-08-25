@@ -215,88 +215,265 @@ class PurchaseDB:
         cursor = conn.cursor()
 
         try:
-            
+
+            # =====================================
+            # GET OLD PURCHASE DETAILS
+            # =====================================
+
             cursor.execute(
                 """
                 SELECT
-                    product_id,
-                    quantity
+                   product_id,
+                   quantity
                 FROM purchase_items
-                WHERE purchase_id=%s
+                WHERE purchase_id = %s
                 """,
                 (purchase_id,)
             )
 
             old_product_id, old_quantity = cursor.fetchone()
-            
-            # Restore old stock
-            cursor.execute(
-                """
-                UPDATE products
-                SET stock_quantity = stock_quantity - %s
-                WHERE product_id = %s
-                """,
-                (
-                   old_quantity,
-                   old_product_id
+
+
+            # =====================================
+            # CASE 1: SAME PRODUCT
+            # =====================================
+
+            if old_product_id == product_id:
+
+                # Get current stock
+                cursor.execute(
+                   """
+                   SELECT stock_quantity
+                   FROM products
+                   WHERE product_id = %s
+                   """,
+                   (product_id,)
                 )
-            )
-            # Update purchases table
+
+                previous_stock = cursor.fetchone()[0]
+
+                # Calculate stock difference
+                quantity_difference = quantity - old_quantity
+
+                # Update stock
+                cursor.execute(
+                    """
+                    UPDATE products
+                    SET stock_quantity = stock_quantity + %s
+                    WHERE product_id = %s
+                    """,
+                    (
+                        quantity_difference,
+                        product_id
+                    )
+                )
+
+                new_stock = previous_stock + quantity_difference
+
+                # Add stock log only if quantity changed
+                if quantity_difference != 0:
+
+                    change_type = (
+                       "IN"
+                        if quantity_difference > 0
+                        else "OUT"
+                    )
+
+                    cursor.execute(
+                        """
+                        INSERT INTO stock_logs
+                        (
+                           product_id,
+                           change_type,
+                           quantity_changed,
+                           previous_stock,
+                           new_stock,
+                           reference_type,
+                           reference_id
+                        )
+                        VALUES (%s,%s,%s,%s,%s,%s,%s)
+                        """,
+                        (
+                           product_id,
+                           change_type,
+                           abs(quantity_difference),
+                           previous_stock,
+                           new_stock,
+                           "Purchase",
+                           purchase_id
+                        )
+                    )
+
+
+            # =====================================
+            # CASE 2: PRODUCT CHANGED
+            # =====================================
+
+            else:
+
+                # Get old product stock
+                cursor.execute(
+                    """
+                    SELECT stock_quantity
+                    FROM products
+                    WHERE product_id = %s
+                    """,
+                    (old_product_id,)
+                )
+
+                old_previous_stock = cursor.fetchone()[0]
+
+                # Remove old quantity
+                cursor.execute(
+                    """
+                    UPDATE products
+                    SET stock_quantity = stock_quantity - %s
+                    WHERE product_id = %s
+                    """,
+                    (
+                       old_quantity,
+                    )
+                )
+
+                old_new_stock = (
+                    old_previous_stock - old_quantity
+                )
+
+                # Log old product removal
+                cursor.execute(
+                    """
+                    INSERT INTO stock_logs
+                    (
+                        product_id,
+                        change_type,
+                        quantity_changed,
+                        previous_stock,
+                        new_stock,
+                        reference_type,
+                        reference_id
+                    )
+                    VALUES (%s,%s,%s,%s,%s,%s,%s)
+                    """,
+                    (
+                        old_product_id,
+                        "OUT",
+                        old_quantity,
+                        old_previous_stock,
+                        old_new_stock,
+                        "Purchase",
+                        purchase_id
+                    )
+                )
+
+
+                # Get new product stock
+                cursor.execute(
+                    """
+                    SELECT stock_quantity
+                    FROM products
+                    WHERE product_id = %s
+                    """,
+                    (product_id,)
+                )
+
+                new_previous_stock = cursor.fetchone()[0]
+
+                # Add new quantity
+                cursor.execute(
+                    """
+                    UPDATE products
+                    SET stock_quantity = stock_quantity + %s
+                    WHERE product_id = %s
+                    """,
+                    (
+                        quantity,
+                        product_id
+                    )
+                )
+
+                new_stock = new_previous_stock + quantity
+
+                # Log new product addition
+                cursor.execute(
+                    """
+                    INSERT INTO stock_logs
+                    (
+                        product_id,
+                        change_type,
+                        quantity_changed,
+                        previous_stock,
+                        new_stock,
+                        reference_type,
+                        reference_id
+                    )
+                    VALUES (%s,%s,%s,%s,%s,%s,%s)
+                    """,
+                    (
+                        product_id,
+                        "IN",
+                        quantity,
+                        new_previous_stock,
+                        new_stock,
+                        "Purchase",
+                        purchase_id
+                    )
+                )
+
+
+            # =====================================
+            # UPDATE PURCHASE
+            # =====================================
+
             cursor.execute(
                 """
                 UPDATE purchases
-                SET supplier_id=%s,
-                    total_amount=%s,
-                    payment_status=%s
-                WHERE purchase_id=%s
+                SET supplier_id = %s,
+                   total_amount = %s,
+                   payment_status = %s
+                WHERE purchase_id = %s
                 """,
                 (
-                   supplier_id,
-                   total_amount,
-                   payment_status,
-                   purchase_id
+                    supplier_id,
+                    total_amount,
+                    payment_status,
+                    purchase_id
                 )
             )
 
-            # Update purchase_items table
+
+            # =====================================
+            # UPDATE PURCHASE ITEMS
+            # =====================================
+
             cursor.execute(
                 """
                 UPDATE purchase_items
-                SET product_id=%s,
-                    quantity=%s,
-                    purchase_price=%s,
-                    total_price=%s
-                WHERE purchase_id=%s
+                SET product_id = %s,
+                    quantity = %s,
+                    purchase_price = %s,
+                    total_price = %s
+                WHERE purchase_id = %s
                 """,
                 (
-                   product_id,
-                   quantity,
-                   purchase_price,
-                   total_amount,
-                   purchase_id
+                    product_id,
+                    quantity,
+                    purchase_price,
+                    total_amount,
+                    purchase_id
                 )
             )
-            # Apply new stock
-            cursor.execute(
-                """
-                UPDATE products
-                SET stock_quantity = stock_quantity + %s
-                WHERE product_id = %s
-                """,
-                (
-                    quantity,
-                    product_id
-                )
-            )  
+
             conn.commit()
 
         except Exception:
-           conn.rollback()
-           raise
+
+            conn.rollback()
+            raise
 
         finally:
-           cursor.close()
-           conn.close()
+
+            cursor.close()
+            conn.close()
            
     @staticmethod
     def delete_purchase(purchase_id):
@@ -306,24 +483,47 @@ class PurchaseDB:
 
         try:
 
-            # Get product and quantity
+            # =====================================
+            # GET PURCHASE ITEM DETAILS
+            # =====================================
+
             cursor.execute(
                 """
                 SELECT product_id, quantity
                 FROM purchase_items
-                WHERE purchase_id=%s
+                WHERE purchase_id = %s
                 """,
                 (purchase_id,)
             )
 
             product_id, quantity = cursor.fetchone()
 
-            # Restore stock
+
+            # =====================================
+            # GET CURRENT STOCK
+            # =====================================
+
+            cursor.execute(
+                """
+                SELECT stock_quantity
+                FROM products
+                WHERE product_id = %s
+                """,
+                (product_id,)
+            )
+
+            previous_stock = cursor.fetchone()[0]
+
+
+            # =====================================
+            # REMOVE PURCHASE QUANTITY FROM STOCK
+            # =====================================
+
             cursor.execute(
                 """
                 UPDATE products
                 SET stock_quantity = stock_quantity - %s
-                WHERE product_id=%s
+                WHERE product_id = %s
                 """,
                 (
                     quantity,
@@ -331,33 +531,75 @@ class PurchaseDB:
                 )
             )
 
-            # Delete purchase items
+            new_stock = previous_stock - quantity
+
+
+            # =====================================
+            # ADD STOCK LOG
+            # =====================================
+
+            cursor.execute(
+                """
+                INSERT INTO stock_logs
+                (
+                    product_id,
+                    change_type,
+                    quantity_changed,
+                    previous_stock,
+                    new_stock,
+                    reference_type,
+                    reference_id
+                )
+                VALUES (%s,%s,%s,%s,%s,%s,%s)
+                """,
+                (
+                    product_id,
+                    "OUT",
+                    quantity,
+                    previous_stock,
+                    new_stock,
+                    "Purchase",
+                    purchase_id
+                )
+            )
+
+
+            # =====================================
+            # DELETE PURCHASE ITEMS
+            # =====================================
+
             cursor.execute(
                 """
                 DELETE FROM purchase_items
-                WHERE purchase_id=%s
+                WHERE purchase_id = %s
                 """,
                 (purchase_id,)
             )
 
-            # Delete purchase
+
+            # =====================================
+            # DELETE PURCHASE
+            # =====================================
+
             cursor.execute(
                 """
                 DELETE FROM purchases
-                WHERE purchase_id=%s
+                WHERE purchase_id = %s
                 """,
-                (purchase_id,)
+               (purchase_id,)
             )
 
             conn.commit()
 
         except Exception:
-           conn.rollback()
-           raise
+
+            conn.rollback()
+            raise
 
         finally:
-           cursor.close()
-           conn.close()
+
+            cursor.close()
+            conn.close()
            
     @staticmethod
     def search_purchase(keyword):

@@ -12,6 +12,7 @@ from purchases import PurchasesPage
 from dashboard_page import DashboardPage
 from settings import SettingsPage
 from payment_history import PaymentHistoryPage
+from stock import StockPage
 
 class Dashboard:
 
@@ -73,6 +74,12 @@ class Dashboard:
             "🛒 Purchases",
             self.show_purchases
         )
+        
+        self.create_sidebar_button(
+            "📦 Stock Management",
+            self.show_stock
+        )
+        
         self.create_sidebar_button(
             "🧾 Billing",
             self.show_billing
@@ -245,6 +252,24 @@ class Dashboard:
         page.pack(fill="both", expand=True)
 
         PurchasesPage(page)
+        
+    def show_stock(self):
+
+        self.clear_content()
+
+        self.set_page_title("Stock Management")
+
+        page = ctk.CTkScrollableFrame(
+            self.content_frame,
+            fg_color="transparent"
+        )
+
+        page.pack(
+            fill="both",
+            expand=True
+        )
+
+        StockPage(page)
     
     def show_billing(self):
 

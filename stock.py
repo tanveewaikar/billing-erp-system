@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import ttk
 from database.product_db import ProductDB
+from database.stock_log_db import StockLogDB
 
 
 class StockPage(ctk.CTkFrame):
@@ -183,7 +184,7 @@ class StockPage(ctk.CTkFrame):
         scrollbar.pack(side="right", fill="y")
         history_tree.pack(fill="both", expand=True, padx=15, pady=15)
 
-        history = self.product_db.get_stock_history(product_id)
+        history = StockLogDB.get_stock_history(product_id)
 
         for row in history:
             history_tree.insert("", "end", values=(
