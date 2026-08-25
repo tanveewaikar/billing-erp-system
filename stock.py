@@ -4,6 +4,7 @@ from database.product_db import ProductDB
 from database.stock_log_db import StockLogDB
 
 
+
 class StockPage(ctk.CTkFrame):
     def __init__(self, parent):
         super().__init__(parent)

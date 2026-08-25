@@ -332,6 +332,7 @@ class PurchaseDB:
                     """,
                     (
                        old_quantity,
+                       old_product_id
                     )
                 )
 
