@@ -63,7 +63,6 @@ class StockPage(ctk.CTkFrame):
         columns = (
             "Product ID",
             "Product Name",
-            "Category",
             "Stock",
             "Selling Price"
         )
@@ -91,18 +90,28 @@ class StockPage(ctk.CTkFrame):
         self.stock_tree.pack(fill="both", expand=True)
         self.stock_tree.bind("<Double-1>", self.open_stock_history)
         self.load_stock()
-        
+         
     def load_stock(self):
+
         for row in self.stock_tree.get_children():
             self.stock_tree.delete(row)
 
         stock_data = self.product_db.get_all_stock()
 
         for stock in stock_data:
-            self.stock_tree.insert("", "end", values=stock)
-            
+            self.stock_tree.insert(
+                "",
+                "end",
+                values=(
+                    stock["product_id"],
+                    stock["product_name"],
+                    stock["stock_quantity"],
+                    stock["selling_price"]
+                )
+            )   
             
     def search_stock(self):
+
         keyword = self.search_entry.get().strip()
 
         for row in self.stock_tree.get_children():
@@ -111,24 +120,36 @@ class StockPage(ctk.CTkFrame):
         stock_data = self.product_db.search_stock(keyword)
 
         for stock in stock_data:
-            self.stock_tree.insert("", "end", values=stock)
-            
+            self.stock_tree.insert(
+                "",
+                "end",
+                values=(
+                    stock["product_id"],
+                    stock["product_name"],
+                    stock["stock_quantity"],
+                    stock["selling_price"]
+                )
+            )
             
     def show_low_stock(self):
+   
         for row in self.stock_tree.get_children():
             self.stock_tree.delete(row)
 
         stock_data = self.product_db.get_low_stock_products()
 
         for stock in stock_data:
-            self.stock_tree.insert("", "end", values=(
-                stock["product_id"],
-                stock["product_name"],
+            self.stock_tree.insert(
                 "",
-                stock["stock_quantity"],
-                ""
-            ))
-            
+                "end",
+                values=(
+                    stock["product_id"],
+                    stock["product_name"],
+                    stock["stock_quantity"],
+                    stock["selling_price"]
+                )
+            )        
+    
     def show_all_stock(self):
         self.search_entry.delete(0, "end")
         self.load_stock()

@@ -324,15 +324,12 @@ class ProductDB:
 
         cursor.execute("""
             SELECT
-               p.product_id,
-               p.product_name,
-               c.category_name,
-               p.stock_quantity,
-               p.selling_price
-            FROM products p
-            JOIN categories c
-               ON p.category_id = c.category_id
-            ORDER BY p.product_name
+                product_id,
+                product_name,
+                stock_quantity,
+                selling_price
+            FROM products
+           ORDER BY product_name
         """)
 
         stock = cursor.fetchall()
@@ -342,7 +339,6 @@ class ProductDB:
 
         return stock
 
-    
     @staticmethod
     def get_low_stock_products():
 
@@ -351,16 +347,13 @@ class ProductDB:
 
         cursor.execute("""
             SELECT
-                p.product_id,
-                p.product_name,
-                c.category_name,
-                p.stock_quantity,
-                p.selling_price
-            FROM products p
-            JOIN categories c
-                ON p.category_id = c.category_id
-            WHERE p.stock_quantity <= 5
-            ORDER BY p.stock_quantity
+                product_id,
+                product_name,
+                stock_quantity,
+               selling_price
+            FROM products
+            WHERE stock_quantity <= 5
+            ORDER BY stock_quantity
         """)
 
         products = cursor.fetchall()
@@ -370,6 +363,7 @@ class ProductDB:
 
         return products
     
+    
     @staticmethod
     def search_stock(keyword):
 
@@ -378,18 +372,14 @@ class ProductDB:
 
         cursor.execute(
             """
-                SELECT
-                   p.product_id,
-                   p.product_name,
-                   c.category_name,
-                   p.stock_quantity,
-                   p.selling_price
-                FROM products p
-                JOIN categories c
-                   ON p.category_id = c.category_id
-                WHERE
-                   p.product_name LIKE %s
-                ORDER BY p.product_name
+            SELECT
+                product_id,
+                product_name,
+                stock_quantity,
+                selling_price
+            FROM products
+            WHERE product_name LIKE %s
+            ORDER BY product_name
             """,
             (f"%{keyword}%",)
         )
@@ -400,6 +390,7 @@ class ProductDB:
         conn.close()
 
         return stock
+
 
     @staticmethod
     def get_product_name(product_id):

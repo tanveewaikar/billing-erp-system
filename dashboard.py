@@ -269,7 +269,9 @@ class Dashboard:
             expand=True
         )
 
-        StockPage(page)
+        stock_page = StockPage(page)
+
+        stock_page.pack(fill="both",expand=True)
     
     def show_billing(self):
 
