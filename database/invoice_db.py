@@ -44,6 +44,200 @@ class InvoiceDB:
         return invoice_id
     
     @staticmethod
+    def create_complete_invoice(
+        invoice_number,
+        customer_id,
+        subtotal,
+        grand_total,
+        bill_items
+    ):
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        try:
+
+            # =====================================
+            # CREATE INVOICE
+            # =====================================
+
+            cursor.execute(
+                """
+                INSERT INTO invoices
+                (
+                    invoice_number,
+                    customer_id,
+                    subtotal,
+                    grand_total
+                )
+                VALUES (%s, %s, %s, %s)
+                """,
+                (
+                    invoice_number,
+                    customer_id,
+                    subtotal,
+                    grand_total
+                )
+            )
+
+            invoice_id = cursor.lastrowid
+
+
+            # =====================================
+            # PROCESS ALL BILL ITEMS
+            # =====================================
+
+            for product_name, data in bill_items.items():
+
+                # Get product details
+                cursor.execute(
+                    """
+                    SELECT
+                        product_id,
+                        stock_quantity
+                    FROM products
+                    WHERE product_name = %s
+                    """,
+                    (product_name,)
+                )
+
+                product = cursor.fetchone()
+
+                if not product:
+                    raise ValueError(
+                        f"Product '{product_name}' not found."
+                    )
+
+                product_id, previous_stock = product
+
+                quantity = data["qty"]
+                price = data["price"]
+                gst_percent = data["gst"]
+
+
+                # =====================================
+                # VALIDATE STOCK
+                # =====================================
+
+                if quantity > previous_stock:
+
+                    raise ValueError(
+                        f"Insufficient stock for '{product_name}'. "
+                        f"Available: {previous_stock}"
+                    )
+
+
+                # =====================================
+                # CALCULATE ITEM TOTAL
+                # =====================================
+
+                item_subtotal = price * quantity
+
+                total_price = (
+                    item_subtotal
+                    + (item_subtotal * gst_percent / 100)
+                )
+
+
+                # =====================================
+                # ADD INVOICE ITEM
+                # =====================================
+
+                cursor.execute(
+                    """
+                    INSERT INTO invoice_items
+                    (
+                        invoice_id,
+                        product_id,
+                        quantity,
+                        price,
+                        gst_percent,
+                        total_price
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    (
+                        invoice_id,
+                        product_id,
+                        quantity,
+                        price,
+                        gst_percent,
+                        total_price
+                    )
+                )
+
+
+                # =====================================
+                # REDUCE STOCK
+                # =====================================
+
+                new_stock = previous_stock - quantity
+
+                cursor.execute(
+                    """
+                    UPDATE products
+                    SET stock_quantity = %s
+                    WHERE product_id = %s
+                    """,
+                    (
+                        new_stock,
+                        product_id
+                    )
+                )
+
+
+                # =====================================
+                # ADD STOCK LOG
+                # =====================================
+
+                cursor.execute(
+                    """
+                    INSERT INTO stock_logs
+                    (
+                        product_id,
+                        change_type,
+                        quantity_changed,
+                        previous_stock,
+                        new_stock,
+                        reference_type,
+                        reference_id
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    """,
+                    (
+                        product_id,
+                        "OUT",
+                        quantity,
+                        previous_stock,
+                        new_stock,
+                        "Invoice",
+                        invoice_id
+                    )
+                )
+
+
+            # =====================================
+            # COMMIT COMPLETE INVOICE
+            # =====================================
+
+            conn.commit()
+
+            return invoice_id
+
+
+        except Exception:
+
+            conn.rollback()
+            raise
+
+
+        finally:
+
+            cursor.close()
+            conn.close()
+    
+    
+    @staticmethod
     def add_invoice_item(
         invoice_id,
         product_id,

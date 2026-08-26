@@ -7,7 +7,6 @@ from tkinter import ttk, messagebox
 from database.invoice_db import InvoiceDB
 from utils.pdf_generator import generate_pdf
 from database.settings_db import SettingsDB
-from database.stock_log_db import StockLogDB
 from utils.email_sender import send_invoice_email
 from database.payment_db import PaymentDB
 
@@ -217,11 +216,8 @@ class BillingPage:
         
     def add_product_to_bill(self):
 
-        print("Add Product Clicked")
-
         product_name = self.product_combo.get()
-        print("Product:", product_name)
-
+        
         try:
             qty = int(self.qty.get())
         except ValueError:
@@ -230,15 +226,11 @@ class BillingPage:
 
         product = ProductDB.get_product_by_name(product_name)
 
-        print("Product from DB:", product)
-
         if not product:
             print("No product found")
             return
 
         product_id, name, price, gst_percent, stock = product
-
-        print("Before:", self.bill_items)
 
         if name in self.bill_items:
 
@@ -268,8 +260,6 @@ class BillingPage:
                "gst": float(gst_percent)
             }
 
-        print("After:", self.bill_items)
-
         self.refresh_bill_table()
 
         self.qty.delete(0, "end")
@@ -277,7 +267,6 @@ class BillingPage:
                 
     def refresh_bill_table(self):
         
-        print("refresh_bill_table called")
         for item in self.tree.get_children():
             self.tree.delete(item)
 
@@ -387,65 +376,34 @@ class BillingPage:
             "gst_number": customer[8]
         }
 
-        invoice_id = InvoiceDB.create_invoice(
-           invoice_number,
-           customer_id,
-           self.subtotal_amount,
-           self.grand_total
-        )
+        try:
+
+            invoice_id = InvoiceDB.create_complete_invoice(
+                invoice_number,
+                customer_id,
+                self.subtotal_amount,
+                self.grand_total,
+                self.bill_items
+            )
+
+        except Exception as e:
+
+            messagebox.showerror(
+                "Invoice Error",
+                str(e)
+            )
+
+            return
+
         self.current_invoice_id = invoice_id
         self.current_invoice_total = self.grand_total
-        
+
         self.current_invoice_number = invoice_number
         self.current_customer_name = customer_name
         self.current_customer_details = customer_details
         self.current_bill_items = self.bill_items.copy()
         self.current_subtotal = self.subtotal_amount
         self.current_gst = self.gst_amount
-       
-        for product_name, data in self.bill_items.items():
-
-            product_id = ProductDB.get_product_id_by_name(
-                product_name
-            )
-
-            qty = data["qty"]
-            price = data["price"]
-            gst_percent = data["gst"]
-
-            subtotal = price * qty
-
-            total_price = subtotal + (
-                subtotal * gst_percent / 100
-            )
- 
-            print(product_name)
-
-            InvoiceDB.add_invoice_item(
-                invoice_id,
-                product_id,
-                qty,
-                price,
-                gst_percent,
-                total_price
-            )
-            
-            previous_stock, new_stock = ProductDB.reduce_stock(
-                product_id,
-                qty
-            )
-            
-            StockLogDB.add_stock_log(
-                product_id=product_id,
-                change_type="OUT",
-                quantity_changed=qty,
-                previous_stock=previous_stock,
-                new_stock=new_stock,
-                reference_type="Invoice",
-                reference_id=invoice_id
-            )
-            
-        print("Invoice ID:", invoice_id)  
         
         self.current_pdf_path = generate_pdf(
             invoice_number,
