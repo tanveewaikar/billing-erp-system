@@ -216,54 +216,90 @@ class BillingPage:
         
     def add_product_to_bill(self):
 
-        product_name = self.product_combo.get()
-        
-        try:
-            qty = int(self.qty.get())
-        except ValueError:
-            print("Invalid quantity")
+        product_name = self.product_combo.get().strip()
+
+        # Check product selection
+        if not product_name:
+            messagebox.showerror(
+               "Product Error",
+               "Please select a product."
+            )
             return
 
+        # Check quantity
+        qty_text = self.qty.get().strip()
+
+        if not qty_text:
+            messagebox.showerror(
+                "Quantity Error",
+                "Please enter a quantity."
+            )
+            return
+
+        try:
+            qty = int(qty_text)
+
+        except ValueError:
+            messagebox.showerror(
+                "Quantity Error",
+                "Quantity must be a valid whole number."
+            )
+            return
+
+        # Quantity must be greater than zero
+        if qty <= 0:
+            messagebox.showerror(
+                "Quantity Error",
+                "Quantity must be greater than zero."
+            )
+            return
+
+        # Get product details
         product = ProductDB.get_product_by_name(product_name)
 
         if not product:
-            print("No product found")
+            messagebox.showerror(
+                "Product Error",
+                "Selected product was not found."
+            )
             return
 
         product_id, name, price, gst_percent, stock = product
 
+        # Check if product already exists in bill
         if name in self.bill_items:
-
-            print("Existing product")
 
             new_qty = self.bill_items[name]["qty"] + qty
 
             if new_qty > stock:
-                print("Stock exceeded")
+                messagebox.showerror(
+                    "Stock Error",
+                    f"Only {stock} item(s) available in stock."
+                )
                 return
 
             self.bill_items[name]["qty"] = new_qty
 
         else:
+
+            # Check available stock
             if qty > stock:
                 messagebox.showerror(
                     "Stock Error",
                     f"Only {stock} item(s) available in stock."
                 )
                 return
-            
-            print("New product")
 
             self.bill_items[name] = {
-               "qty": qty,
-               "price": float(price),
-               "gst": float(gst_percent)
+                "qty": qty,
+                "price": float(price),
+                "gst": float(gst_percent)
             }
 
         self.refresh_bill_table()
 
+        # Clear quantity field after successful addition
         self.qty.delete(0, "end")
-        
                 
     def refresh_bill_table(self):
         
@@ -327,6 +363,13 @@ class BillingPage:
         )
         
     def generate_invoice(self):
+        
+        if self.current_invoice_id is not None:
+            messagebox.showerror(
+                "Invoice Error",
+                "An invoice has already been generated. Please create a new invoice."
+            )
+            return
         
         if not self.bill_items:
           messagebox.showerror(
