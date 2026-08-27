@@ -13,6 +13,7 @@ from dashboard_page import DashboardPage
 from settings import SettingsPage
 from payment_history import PaymentHistoryPage
 from stock import StockPage
+from ai_assistant import AIAssistantPage
 
 class Dashboard:
 
@@ -88,6 +89,11 @@ class Dashboard:
         self.create_sidebar_button(
             "📊 Reports",
             self.show_reports
+        )
+        
+        self.create_sidebar_button(
+            "🤖 AI Assistant",
+            self.show_ai_assistant
         )
         
         self.create_sidebar_button(
@@ -300,6 +306,21 @@ class Dashboard:
         page.pack(fill="both", expand=True)
 
         ReportsPage(page)
+        
+    def show_ai_assistant(self):
+
+        self.clear_content()
+
+        self.set_page_title("AI Business Assistant")
+
+        page = ctk.CTkScrollableFrame(
+            self.content_frame,
+            fg_color="transparent"
+        )
+
+        page.pack(fill="both", expand=True )
+
+        AIAssistantPage(page)
         
     def show_payment_history(self):
 
