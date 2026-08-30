@@ -42,7 +42,7 @@ class DashboardPage:
             cards_frame,
             "Today's Sales",
             f"₹{DashboardDB.get_today_sales():,.2f}",
-            width=270
+            width=220
         )
 
         self.create_card(
@@ -245,7 +245,7 @@ class DashboardPage:
         )
         self.load_recent_invoices()
         
-    def create_card(self, parent, title, value, width=170):
+    def create_card(self, parent, title, value, width=150):
 
         card = ctk.CTkFrame(
             parent,
