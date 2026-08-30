@@ -25,7 +25,7 @@ class Dashboard:
         # MAIN LAYOUT
         # ==============================
 
-        self.sidebar = ctk.CTkFrame(
+        self.sidebar = ctk.CTkScrollableFrame(
             root,
             width=250,
             fg_color="#0F172A",

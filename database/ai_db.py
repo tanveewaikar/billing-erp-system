@@ -5,6 +5,7 @@ class AIDB:
 
     @staticmethod
     def get_total_sales():
+        """Returns the total sales amount from all invoices."""
 
         conn = get_connection()
         cursor = conn.cursor()
@@ -24,6 +25,7 @@ class AIDB:
 
     @staticmethod
     def get_low_stock_products():
+        """Returns products whose stock quantity is 10 or less."""
 
         conn = get_connection()
         cursor = conn.cursor()
@@ -42,26 +44,31 @@ class AIDB:
         cursor.close()
         conn.close()
 
-        return products
+        return [
+            {
+                "product": product[0],
+                "stock": product[1]
+            }
+            for product in products
+        ]
 
 
     @staticmethod
     def get_pending_payment():
+        """Returns the total amount still pending from customers."""
 
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT
-                COALESCE(SUM(i.grand_total), 0)
-            FROM invoices i
+            SELECT COALESCE(SUM(grand_total), 0)
+            FROM invoices
         """)
 
         total_invoice_amount = cursor.fetchone()[0]
 
         cursor.execute("""
-            SELECT
-                COALESCE(SUM(amount_paid), 0)
+            SELECT COALESCE(SUM(amount_paid), 0)
             FROM payments
         """)
 
@@ -70,11 +77,64 @@ class AIDB:
         cursor.close()
         conn.close()
 
-        pending_amount = (
-            float(total_invoice_amount)
-            - float(total_paid)
-        )
+        return float(total_invoice_amount) - float(total_paid)
 
-        return pending_amount
-    
-    
+
+    @staticmethod
+    def get_customer_count():
+        """Returns the total number of customers."""
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM customers
+        """)
+
+        count = cursor.fetchone()[0]
+
+        cursor.close()
+        conn.close()
+
+        return count
+
+
+    @staticmethod
+    def get_product_count():
+        """Returns the total number of products."""
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM products
+        """)
+
+        count = cursor.fetchone()[0]
+
+        cursor.close()
+        conn.close()
+
+        return count
+
+
+    @staticmethod
+    def get_supplier_count():
+        """Returns the total number of suppliers."""
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM suppliers
+        """)
+
+        count = cursor.fetchone()[0]
+
+        cursor.close()
+        conn.close()
+
+        return count

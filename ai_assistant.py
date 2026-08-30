@@ -1,5 +1,5 @@
 import customtkinter as ctk
-
+from database.ai_db import AIDB
 
 class AIAssistantPage:
 
@@ -22,13 +22,12 @@ class AIAssistantPage:
         # Chat display area
         self.chat_box = ctk.CTkTextbox(
             parent,
-            height=400,
+            height=350,
             font=("Segoe UI", 15),
             wrap="word"
         )
         self.chat_box.pack(
             fill="both",
-            expand=True,
             padx=20,
             pady=10
         )
@@ -87,25 +86,38 @@ class AIAssistantPage:
         question = self.question_entry.get().strip()
 
         if not question:
-            return
+           return
 
-        self.chat_box.configure(
-            state="normal"
-        )
+        self.chat_box.configure(state="normal")
 
         self.chat_box.insert(
             "end",
             f"\n\nYou: {question}\n"
         )
 
+        question_lower = question.lower()
+
+        if "total sales" in question_lower:
+
+            total_sales = AIDB.get_total_sales()
+
+            response = (
+                f"Your total sales are ₹{total_sales:.2f}."
+            )
+
+        else:
+
+            response = (
+                "Sorry, I can currently answer questions about "
+                "total sales, low stock, and pending payments."
+            )
+
         self.chat_box.insert(
             "end",
-            "\nAI: AI integration will be added next."
+            f"\nAI: {response}"
         )
 
-        self.chat_box.configure(
-            state="disabled"
-        )
+        self.chat_box.configure(state="disabled")
 
         self.chat_box.see("end")
 
