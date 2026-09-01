@@ -108,7 +108,6 @@ class ProductDB:
         purchase_price,
         selling_price,
         gst_percent,
-        stock_quantity,
         unit
     ):
 
@@ -123,7 +122,6 @@ class ProductDB:
               purchase_price=%s,
               selling_price=%s,
               gst_percent=%s,
-              stock_quantity=%s,
               unit=%s
             WHERE product_id=%s
             """,
@@ -133,7 +131,6 @@ class ProductDB:
               purchase_price,
               selling_price,
               gst_percent,
-              stock_quantity,
               unit,
               product_id
             )

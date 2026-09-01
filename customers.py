@@ -137,13 +137,13 @@ class CustomersPage:
                 self.tree.column(col, width=250)
 
             elif col == "GST":
-                self.tree.column(col, width=180)
+                self.tree.column(col, width=170)
 
             elif col == "Address":
-                self.tree.column(col, width=250)
+                self.tree.column(col, width=270)
 
             elif col == "City":
-                self.tree.column(col, width=120)
+                self.tree.column(col, width=110)
 
             elif col == "State":
                 self.tree.column(col, width=150)

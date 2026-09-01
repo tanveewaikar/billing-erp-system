@@ -268,7 +268,8 @@ class ProductsPage:
             )
         
     def clear_fields(self):
-
+        self.stock.configure( state="normal")
+        
         self.product_name.delete(0, "end")
         self.price.delete(0, "end")
         self.stock.delete(0, "end")
@@ -276,6 +277,8 @@ class ProductsPage:
         self.purchase_price.delete(0, "end")
         self.barcode.delete(0, "end")
         self.unit.delete(0, "end")
+        
+        self.selected_product_id = None
         
     def load_products(self):
 
@@ -314,6 +317,8 @@ class ProductsPage:
 
        self.stock.delete(0, "end")
        self.stock.insert(0, values[4])
+       
+       self.stock.configure( state="disabled")
 
        self.gst.delete(0, "end")
        self.gst.insert(0, values[5])
@@ -323,6 +328,124 @@ class ProductsPage:
 
        self.unit.delete(0, "end")
        self.unit.insert(0, values[7])
+
+    def validate_product_update(self):
+
+        product_name = self.product_name.get().strip()
+        purchase_price = self.purchase_price.get().strip()
+        selling_price = self.price.get().strip()
+        gst_percent = self.gst.get().strip()
+        barcode = self.barcode.get().strip()
+        unit = self.unit.get().strip()
+
+        if not product_name:
+            messagebox.showwarning(
+                "Validation Error",
+                "Product name is required."
+            )
+            return False
+
+        if product_name.isdigit():
+            messagebox.showwarning(
+                "Validation Error",
+                "Product name cannot contain only numbers."
+            )
+            return False
+
+        if not purchase_price:
+            messagebox.showwarning(
+                "Validation Error",
+                "Purchase price is required."
+            )
+            return False
+
+        try:
+            purchase_price = float(purchase_price)
+
+            if purchase_price < 0:
+                messagebox.showwarning(
+                    "Validation Error",
+                    "Purchase price cannot be negative."
+                )
+                return False
+
+        except ValueError:
+            messagebox.showwarning(
+                "Validation Error",
+                "Invalid purchase price."
+            )
+            return False
+
+        if not selling_price:
+            messagebox.showwarning(
+                "Validation Error",
+                "Selling price is required."
+            )
+            return False
+
+        try:
+            selling_price = float(selling_price)
+
+            if selling_price <= 0:
+                messagebox.showwarning(
+                    "Validation Error",
+                    "Selling price must be greater than zero."
+                )
+                return False
+
+        except ValueError:
+            messagebox.showwarning(
+                "Validation Error",
+                "Invalid selling price."
+            )
+            return False
+
+        if selling_price < purchase_price:
+            messagebox.showwarning(
+                "Validation Error",
+                "Selling price cannot be less than purchase price."
+            )
+            return False
+
+        if not gst_percent:
+            messagebox.showwarning(
+                "Validation Error",
+                "GST percentage is required."
+            )
+            return False
+
+        try:
+            gst_percent = float(gst_percent)
+
+            if gst_percent < 0 or gst_percent > 100:
+                messagebox.showwarning(
+                    "Validation Error",
+                    "GST must be between 0 and 100."
+                )
+                return False
+
+        except ValueError:
+            messagebox.showwarning(
+                "Validation Error",
+                "Invalid GST percentage."
+            )
+            return False
+
+        if not barcode:
+            messagebox.showwarning(
+                "Validation Error",
+                "Barcode is required."
+            )
+            return False
+
+        if not unit:
+            messagebox.showwarning(
+                "Validation Error",
+                "Unit is required."
+            )
+            return False
+
+        return True
     
     def update_product(self):
 
@@ -332,7 +455,7 @@ class ProductsPage:
             "Please select a product"
            )
            return
-        if not self.validate_product():
+        if not self.validate_product_update():
             return
         
         try:
@@ -344,7 +467,6 @@ class ProductsPage:
                 float(self.purchase_price.get() ),
                 float(self.price.get()),
                 float(self.gst.get()),
-                int(self.stock.get()),
                 self.unit.get().strip()
             )
 

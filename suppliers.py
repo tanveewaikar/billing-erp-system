@@ -289,7 +289,10 @@ class SuppliersPage:
         self.address.delete(0, "end")
         
     def load_suppliers(self):
-
+        
+        # Clear search field
+        self.search_entry.delete(0, "end")
+        
         for item in self.tree.get_children():
            self.tree.delete(item)
 
