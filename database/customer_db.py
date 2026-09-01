@@ -147,7 +147,7 @@ class CustomerDB:
 
                 raise ValueError(
                     "This customer cannot be deleted because "
-                    "invoice history exists."
+                    "purchase history exists."
                 )
 
             # Delete customer only if no invoices exist

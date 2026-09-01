@@ -52,6 +52,9 @@ class CustomersPage:
         delete_btn = ctk.CTkButton(form,text="Delete Customer", fg_color="red",hover_color="darkred",command=self.delete_customer)
         delete_btn.grid(row=2, column=2, pady=20)
         
+        clear_btn = ctk.CTkButton( form,text="Clear",command=self.clear_fields)
+        clear_btn.grid(row=2, column=3, pady=20)
+        
         # ==========================================
         # SEARCH
         # ==========================================
@@ -113,12 +116,44 @@ class CustomersPage:
         )
 
         self.tree = ttk.Treeview(table_frame, columns=columns, show="headings")
+        
+        scrollbar_x = ttk.Scrollbar(table_frame,orient="horizontal", command=self.tree.xview)
+        self.tree.configure( xscrollcommand=scrollbar_x.set)
 
         for col in columns:
-            self.tree.heading(col, text=col)
-            self.tree.column(col, width=150)
 
-        self.tree.pack(fill="both", expand=True)
+            self.tree.heading(col, text=col)
+
+            if col == "ID":
+                self.tree.column(col, width=60, anchor="center")
+
+            elif col == "Name":
+                self.tree.column(col, width=160)
+
+            elif col == "Phone":
+                self.tree.column(col, width=130)
+
+            elif col == "Email":
+                self.tree.column(col, width=250)
+
+            elif col == "GST":
+                self.tree.column(col, width=180)
+
+            elif col == "Address":
+                self.tree.column(col, width=250)
+
+            elif col == "City":
+                self.tree.column(col, width=120)
+
+            elif col == "State":
+                self.tree.column(col, width=150)
+
+            elif col == "Pincode":
+                self.tree.column(col, width=100, anchor="center")
+
+        self.tree.pack( fill="both", expand=True, padx=20, pady=(20, 0))
+        scrollbar_x.pack( fill="x", padx=20, pady=(0, 20))
+        
         self.tree.bind(
             "<<TreeviewSelect>>",
             self.select_customer
@@ -299,24 +334,24 @@ class CustomersPage:
 
     def load_customers(self):
 
-        # Clear existing rows
+        # Clear search field
+        self.search_entry.delete(0, "end")
 
+        # Clear existing rows
         for item in self.tree.get_children():
             self.tree.delete(item)
 
-        # Fetch customers from database
-
+        # Fetch customers
         customers = self.customer_db.get_all_customers()
 
-        # Insert into treeview
-
+        # Insert customers
         for customer in customers:
 
             self.tree.insert(
-            "",
-            "end",
-            values=customer
-        )
+               "",
+               "end",
+               values=customer
+            )
             
     # ==========================================
     # SEARCH CUSTOMERS
@@ -473,3 +508,20 @@ class CustomersPage:
                "Error",
                str(e)
             )
+            
+    # ==========================================
+    # CLEAR FIELDS
+    # ==========================================
+
+    def clear_fields(self):
+
+        self.name.delete(0, "end")
+        self.phone.delete(0, "end")
+        self.email.delete(0, "end")
+        self.gst.delete(0, "end")
+        self.address.delete(0, "end")
+        self.city.delete(0, "end")
+        self.state.delete(0, "end")
+        self.pincode.delete(0, "end")
+
+        self.selected_customer_id = None
