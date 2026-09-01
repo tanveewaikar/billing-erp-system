@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from database.invoice_db import InvoiceDB
 
 
@@ -156,17 +156,63 @@ class ReportsPage:
         from_date = self.from_date_entry.get().strip()
         to_date = self.to_date_entry.get().strip()
 
+        # Check empty fields
+        if not from_date or not to_date:
+            messagebox.showwarning(
+                "Validation Error",
+                "Please enter both From Date and To Date."
+            )
+            return
+
+        # Validate date format
+        try:
+            from datetime import datetime
+
+            from_date_obj = datetime.strptime(
+                from_date,
+                "%Y-%m-%d"
+            )
+
+            to_date_obj = datetime.strptime(
+                to_date,
+                "%Y-%m-%d"
+            )
+
+        except ValueError:
+
+            messagebox.showwarning(
+                "Invalid Date",
+                "Please enter dates in YYYY-MM-DD format."
+            )
+            return
+
+        # Check date range
+        if from_date_obj > to_date_obj:
+
+            messagebox.showwarning(
+                "Invalid Date Range",
+                "From Date cannot be greater than To Date."
+            )
+            return
+
         # Clear old rows
         for item in self.tree.get_children():
             self.tree.delete(item)
 
+        # Get filtered invoices
         invoices = InvoiceDB.get_invoices_by_date(
             from_date,
             to_date
         )
 
+        # Display results
         for invoice in invoices:
-            self.tree.insert("", "end", values=invoice)
+
+            self.tree.insert(
+                "",
+                "end",
+                values=invoice
+            )  
             
     def open_invoice(self, event):
 
