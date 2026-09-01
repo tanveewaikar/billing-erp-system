@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from tkinter import messagebox
+import threading
 
 from database.ai_service import AIService
 
@@ -82,7 +83,7 @@ class AIAssistantPage:
             pady=10
         )
 
-        ask_button = ctk.CTkButton(
+        self.ask_button = ctk.CTkButton(
             input_frame,
             text="Ask AI",
             width=120,
@@ -90,7 +91,7 @@ class AIAssistantPage:
             command=self.ask_ai
         )
 
-        ask_button.pack(
+        self.ask_button.pack(
             side="right",
             padx=(5, 10),
             pady=10
@@ -140,21 +141,51 @@ class AIAssistantPage:
             f"\n\nYou: {question}\n"
         )
 
+        self.chat_box.configure(
+            state="disabled"
+        )
+
+        self.chat_box.see("end")
+
         # Check AI service
         if self.ai_service is None:
 
-            self.chat_box.insert(
-                "end",
-                "\nAI: AI service is not available."
+            self.show_ai_response(
+                "AI service is not available."
             )
-
-            self.chat_box.configure(
-                state="disabled"
-            )
-
-            self.chat_box.see("end")
 
             return
+
+        # Disable input while AI is working
+        self.ask_button.configure(
+            text="Thinking...",
+            state="disabled"
+        )
+
+        self.question_entry.configure(
+            state="disabled"
+        )
+
+        # Clear input
+        self.question_entry.delete(
+            0,
+            "end"
+        )
+
+        # Start AI request in background
+        thread = threading.Thread(
+            target=self.get_ai_response,
+            args=(question,),
+            daemon=True
+        )
+
+        thread.start()
+
+    # ==========================================
+    # GET AI RESPONSE
+    # ==========================================
+
+    def get_ai_response(self, question):
 
         try:
 
@@ -162,12 +193,40 @@ class AIAssistantPage:
                 question
             )
 
-        except Exception as e:
+        except Exception:
 
             response = (
                 "Sorry, I could not process your request.\n"
-                f"Error: {str(e)}"
+                "The AI service is temporarily unavailable. "
+                "Please check your internet connection and try again."
             )
+
+        # Update UI safely through Tkinter main thread
+        self.parent_after(
+            response
+        )
+
+    # ==========================================
+    # UPDATE UI
+    # ==========================================
+
+    def parent_after(self, response):
+
+        # Schedule UI update on main thread
+        self.chat_box.after(
+            0,
+            lambda: self.show_ai_response(response)
+        )
+
+    # ==========================================
+    # SHOW AI RESPONSE
+    # ==========================================
+
+    def show_ai_response(self, response):
+
+        self.chat_box.configure(
+            state="normal"
+        )
 
         self.chat_box.insert(
             "end",
@@ -180,7 +239,21 @@ class AIAssistantPage:
 
         self.chat_box.see("end")
 
+        # Enable input again
+        self.question_entry.configure(
+            state="normal"
+        )
+
+        # Clear question field
         self.question_entry.delete(
             0,
             "end"
         )
+
+        # Enable Ask AI button
+        self.ask_button.configure(
+            text="Ask AI",
+            state="normal"
+        )
+
+        self.question_entry.focus()
