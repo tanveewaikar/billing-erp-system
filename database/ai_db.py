@@ -172,3 +172,90 @@ class AIDB:
 
         return None
     
+    @staticmethod
+    def get_best_selling_product():
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                p.product_name,
+                SUM(ii.quantity) AS total_quantity
+            FROM invoice_items ii
+            JOIN products p
+                ON ii.product_id = p.product_id
+            GROUP BY
+                p.product_id,
+                p.product_name
+            ORDER BY total_quantity DESC
+            LIMIT 1
+        """)
+
+        product = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        if product:
+            return {
+                "product": product[0],
+                "quantity_sold": int(product[1])
+            }
+
+        return None
+    
+    @staticmethod
+    def get_total_profit():
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                COALESCE(
+                    SUM(
+                        (ii.price - p.purchase_price) * ii.quantity
+                    ),
+                    0
+                )
+                FROM invoice_items ii
+                JOIN products p
+                    ON ii.product_id = p.product_id
+            """)
+
+        total_profit = cursor.fetchone()[0]
+
+        cursor.close()
+        conn.close()
+
+        return float(total_profit)
+    
+    @staticmethod
+    def get_monthly_sales():
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                DATE_FORMAT(invoice_date, '%Y-%m') AS month,
+                COALESCE(SUM(grand_total), 0) AS total_sales
+            FROM invoices
+            GROUP BY DATE_FORMAT(invoice_date, '%Y-%m')
+            ORDER BY month
+        """)
+
+        sales = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return [
+            {
+                "month": row[0],
+                "sales": float(row[1])
+            }
+            for row in sales
+        ]
+        

@@ -40,6 +40,9 @@ Important rules:
 6. Give clear, concise and useful business insights.
 7. If the user asks a question unrelated to the ERP/business,
    politely explain that you are designed to help with this Billing ERP.
+8. Always use plain text formatting. Do not use Markdown.
+   Do not use asterisks (*), double asterisks (**), hashtags (#),
+   backticks, or Markdown bullet formatting.
 """,
                 "tools": [
                     AIDB.get_total_sales,
@@ -48,7 +51,10 @@ Important rules:
                     AIDB.get_customer_count,
                     AIDB.get_product_count,
                     AIDB.get_supplier_count,
-                    AIDB.get_highest_spending_customer
+                    AIDB.get_highest_spending_customer,
+                    AIDB.get_best_selling_product,
+                    AIDB.get_total_profit,
+                    AIDB.get_monthly_sales
                 ]
             }
         )
