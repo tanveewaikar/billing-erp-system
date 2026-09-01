@@ -138,3 +138,37 @@ class AIDB:
         conn.close()
 
         return count
+    
+    @staticmethod
+    def get_highest_spending_customer():
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                c.customer_name,
+                COALESCE(SUM(i.grand_total), 0) AS total_spending
+            FROM customers c
+            JOIN invoices i
+                ON c.customer_id = i.customer_id
+            GROUP BY
+                c.customer_id,
+                c.customer_name
+            ORDER BY total_spending DESC
+            LIMIT 1
+        """)
+
+        customer = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        if customer:
+            return (
+                customer[0],
+                float(customer[1])
+            )
+
+        return None
+    

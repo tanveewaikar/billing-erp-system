@@ -1,5 +1,8 @@
 import customtkinter as ctk
-from database.ai_db import AIDB
+from tkinter import messagebox
+
+from database.ai_service import AIService
+
 
 class AIAssistantPage:
 
@@ -14,18 +17,22 @@ class AIAssistantPage:
 
         description = ctk.CTkLabel(
             parent,
-            text="Ask questions about your sales, stock, customers, purchases and payments.",
+            text="Ask questions about your business data using AI.",
             font=("Segoe UI", 15)
         )
         description.pack(pady=(0, 20))
 
-        # Chat display area
+        # ==============================
+        # CHAT DISPLAY
+        # ==============================
+
         self.chat_box = ctk.CTkTextbox(
             parent,
             height=350,
             font=("Segoe UI", 15),
             wrap="word"
         )
+
         self.chat_box.pack(
             fill="both",
             padx=20,
@@ -35,19 +42,25 @@ class AIAssistantPage:
         self.chat_box.insert(
             "end",
             "🤖 AI Assistant\n\n"
-            "Hello! I can help you analyze your business data.\n\n"
-            "Try asking:\n"
+            "Hello! I can analyze your business data.\n\n"
+            "You can ask questions such as:\n"
             "• What are my total sales?\n"
             "• Which products have low stock?\n"
-            "• What is my pending payment amount?\n"
+            "• What is my pending payment?\n"
+            "• How many customers do I have?\n"
+            "• Give me a business overview.\n"
         )
 
         self.chat_box.configure(
             state="disabled"
         )
 
-        # Input section
+        # ==============================
+        # INPUT SECTION
+        # ==============================
+
         input_frame = ctk.CTkFrame(parent)
+
         input_frame.pack(
             fill="x",
             padx=20,
@@ -60,6 +73,7 @@ class AIAssistantPage:
             height=45,
             font=("Segoe UI", 15)
         )
+
         self.question_entry.pack(
             side="left",
             fill="x",
@@ -75,41 +89,84 @@ class AIAssistantPage:
             height=45,
             command=self.ask_ai
         )
+
         ask_button.pack(
             side="right",
             padx=(5, 10),
             pady=10
         )
 
+        # Allow Enter key to ask
+        self.question_entry.bind(
+            "<Return>",
+            lambda event: self.ask_ai()
+        )
+
+        # ==============================
+        # GEMINI SERVICE
+        # ==============================
+
+        try:
+
+            self.ai_service = AIService()
+
+        except Exception as e:
+
+            self.ai_service = None
+
+            messagebox.showerror(
+                "AI Setup Error",
+                str(e)
+            )
+
+    # ==========================================
+    # ASK AI
+    # ==========================================
+
     def ask_ai(self):
 
         question = self.question_entry.get().strip()
 
         if not question:
-           return
+            return
 
-        self.chat_box.configure(state="normal")
+        # Display user question
+        self.chat_box.configure(
+            state="normal"
+        )
 
         self.chat_box.insert(
             "end",
             f"\n\nYou: {question}\n"
         )
 
-        question_lower = question.lower()
+        # Check AI service
+        if self.ai_service is None:
 
-        if "total sales" in question_lower:
-
-            total_sales = AIDB.get_total_sales()
-
-            response = (
-                f"Your total sales are ₹{total_sales:.2f}."
+            self.chat_box.insert(
+                "end",
+                "\nAI: AI service is not available."
             )
 
-        else:
+            self.chat_box.configure(
+                state="disabled"
+            )
+
+            self.chat_box.see("end")
+
+            return
+
+        try:
+
+            response = self.ai_service.ask(
+                question
+            )
+
+        except Exception as e:
 
             response = (
-                "Sorry, I can currently answer questions about "
-                "total sales, low stock, and pending payments."
+                "Sorry, I could not process your request.\n"
+                f"Error: {str(e)}"
             )
 
         self.chat_box.insert(
@@ -117,8 +174,13 @@ class AIAssistantPage:
             f"\nAI: {response}"
         )
 
-        self.chat_box.configure(state="disabled")
+        self.chat_box.configure(
+            state="disabled"
+        )
 
         self.chat_box.see("end")
 
-        self.question_entry.delete(0, "end")
+        self.question_entry.delete(
+            0,
+            "end"
+        )
