@@ -39,8 +39,6 @@ def generate_pdf(
         f"{invoice_number}.pdf"
     )
 
-    print("PDF Path:", pdf_path)
-
     c = canvas.Canvas(pdf_path, pagesize=letter)
 
     width, height = letter
@@ -429,8 +427,6 @@ def generate_pdf(
 
     # Save PDF
     c.save()
-
-    print("Exists:", os.path.exists(pdf_path))
 
     # Auto-open PDF
     if os.path.exists(pdf_path):

@@ -1,9 +1,8 @@
 import os
 import customtkinter as ctk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from database.customer_db import CustomerDB
 from database.product_db import ProductDB
-from tkinter import ttk, messagebox
 from database.invoice_db import InvoiceDB
 from utils.pdf_generator import generate_pdf
 from database.settings_db import SettingsDB
@@ -393,19 +392,18 @@ class BillingPage:
             datetime.now().strftime("%Y%m%d%H%M%S")
         )
 
-        print(invoice_number)
-
         customer_name = self.customer.get()
   
         customer = CustomerDB.get_customer_by_name(
         customer_name
         )
 
-        print(customer)
-
         if not customer:
-           print("Customer not found")
-           return
+            messagebox.showerror(
+                "Customer Error",
+                "Customer not found."
+            )
+            return
 
         customer_id = customer[0]
         customer_details = {
@@ -554,8 +552,6 @@ class BillingPage:
             "Success",
             "Payment saved successfully."
         )
-
-        print("Payment saved:", amount_paid)
         
     def update_payment_summary(self):
 
